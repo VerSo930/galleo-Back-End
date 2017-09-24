@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="galleo:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="Galleo.war">
+      <element id="artifact" artifact-name="galleo:war exploded" />
+    </root>
+  </artifact>
+</component>

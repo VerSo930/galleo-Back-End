@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="galleo@vuta-alexandru.com">
+  <database-model serializer="dbm" rdbms="MYSQL" format-version="4.2">
+    <root id="1"/>
+    <schema id="2" parent="1" name="chat">
+      <Current>1</Current>
+    </schema>
+    <schema id="3" parent="1" name="db_example"/>
+    <schema id="4" parent="1" name="information_schema"/>
+    <schema id="5" parent="1" name="mysql"/>
+    <schema id="6" parent="1" name="performance_schema"/>
+    <schema id="7" parent="1" name="phpmyadmin"/>
+    <schema id="8" parent="1" name="roshare.ro"/>
+    <schema id="9" parent="1" name="spring_test"/>
+    <schema id="10" parent="1" name="wordpress"/>
+    <schema id="11" parent="1" name="wp_roshare.ro"/>
+    <schema id="12" parent="1" name="galleo">
+      <Current>1</Current>
+      <Visible>1</Visible>
+    </schema>
+    <table id="13" parent="12" name="Gallery"/>
+    <table id="14" parent="12" name="Photos"/>
+    <table id="15" parent="12" name="User"/>
+    <column id="16" parent="13" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="17" parent="13" name="userId">
+      <Position>2</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <column id="18" parent="13" name="name">
+      <Position>3</Position>
+      <DataType>varchar(250)|0</DataType>
+    </column>
+    <column id="19" parent="13" name="description">
+      <Position>4</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <column id="20" parent="13" name="createdAt">
+      <Position>5</Position>
+      <DataType>datetime|0</DataType>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
+    </column>
+    <column id="21" parent="13" name="updatedAt">
+      <Position>6</Position>
+      <DataType>datetime|0</DataType>
+    </column>
+    <column id="22" parent="13" name="isPrivate">
+      <Position>7</Position>
+      <DataType>tinyint(1)|0</DataType>
+    </column>
+    <column id="23" parent="13" name="coverImage">
+      <Position>8</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <column id="24" parent="13" name="views">
+      <Position>9</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <index id="25" parent="13" name="Gallery_User_id_fk">
+      <ColNames>userId</ColNames>
+    </index>
+    <key id="26" parent="13" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="27" parent="13" name="Gallery_User_id_fk">
+      <ColNames>userId</ColNames>
+      <RefSchemaName>galleo</RefSchemaName>
+      <RefTableName>User</RefTableName>
+      <RefColNames>id</RefColNames>
+      <OnUpdate>cascade</OnUpdate>
+      <OnDelete>cascade</OnDelete>
+    </foreign-key>
+    <column id="28" parent="14" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="29" parent="14" name="userId">
+      <Position>2</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <column id="30" parent="14" name="galleryId">
+      <Position>3</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <column id="31" parent="14" name="name">
+      <Position>4</Position>
+      <DataType>varchar(250)|0</DataType>
+    </column>
+    <column id="32" parent="14" name="description">
+      <Position>5</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <column id="33" parent="14" name="createdAt">
+      <Position>6</Position>
+      <DataType>datetime|0</DataType>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
+    </column>
+    <column id="34" parent="14" name="updatedAt">
+      <Position>7</Position>
+      <DataType>datetime|0</DataType>
+    </column>
+    <column id="35" parent="14" name="isPrivate">
+      <Position>8</Position>
+      <DataType>tinyint(1)|0</DataType>
+    </column>
+    <column id="36" parent="14" name="url">
+      <Position>9</Position>
+      <DataType>varchar(250)|0</DataType>
+    </column>
+    <index id="37" parent="14" name="Photos_Gallery_id_fk">
+      <ColNames>galleryId</ColNames>
+    </index>
+    <index id="38" parent="14" name="Photos_User_id_fk">
+      <ColNames>userId</ColNames>
+    </index>
+    <key id="39" parent="14" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="40" parent="14" name="Photos_User_id_fk">
+      <ColNames>userId</ColNames>
+      <RefSchemaName>galleo</RefSchemaName>
+      <RefTableName>User</RefTableName>
+      <RefColNames>id</RefColNames>
+      <OnUpdate>cascade</OnUpdate>
+      <OnDelete>cascade</OnDelete>
+    </foreign-key>
+    <foreign-key id="41" parent="14" name="Photos_Gallery_id_fk">
+      <ColNames>galleryId</ColNames>
+      <RefSchemaName>galleo</RefSchemaName>
+      <RefTableName>Gallery</RefTableName>
+      <RefColNames>id</RefColNames>
+      <OnUpdate>cascade</OnUpdate>
+      <OnDelete>cascade</OnDelete>
+    </foreign-key>
+    <column id="42" parent="15" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="43" parent="15" name="name">
+      <Position>2</Position>
+      <DataType>varchar(50)|0</DataType>
+    </column>
+    <column id="44" parent="15" name="lastName">
+      <Position>3</Position>
+      <DataType>varchar(50)|0</DataType>
+    </column>
+    <column id="45" parent="15" name="email">
+      <Position>4</Position>
+      <DataType>varchar(250)|0</DataType>
+    </column>
+    <column id="46" parent="15" name="userName">
+      <Position>5</Position>
+      <DataType>varchar(50)|0</DataType>
+    </column>
+    <column id="47" parent="15" name="password">
+      <Position>6</Position>
+      <DataType>varchar(250)|0</DataType>
+    </column>
+    <column id="48" parent="15" name="createdAt">
+      <Position>7</Position>
+      <DataType>datetime|0</DataType>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
+    </column>
+    <column id="49" parent="15" name="lastActivity">
+      <Position>8</Position>
+      <DataType>datetime|0</DataType>
+    </column>
+    <column id="50" parent="15" name="isEnabled">
+      <Position>9</Position>
+      <DataType>tinyint(1)|0</DataType>
+    </column>
+    <column id="51" parent="15" name="avatar">
+      <Position>10</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <column id="52" parent="15" name="role">
+      <Position>11</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <key id="53" parent="15" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+  </database-model>
+</dataSource>

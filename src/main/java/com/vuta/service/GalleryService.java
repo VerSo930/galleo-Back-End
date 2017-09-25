@@ -59,4 +59,6 @@ public class GalleryService {
     public Response updateGallery(GalleryModel gallery) {
         return controller.update(gallery);
     }
+
+
 }

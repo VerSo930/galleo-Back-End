@@ -15,6 +15,16 @@ public class PhotoModel {
     private boolean isPrivate;
     private String url;
 
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
+
+    private int views;
+
     public PhotoModel(int id, int userId, int galleryId, String name, String description, long createdAt, long updatedAt, boolean isPrivate, String url) {
         this.id = id;
         this.userId = userId;

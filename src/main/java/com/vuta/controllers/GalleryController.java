@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 /**
  * Created by verso_dxr17un on 9/23/2017.
  */
+
 public class GalleryController {
 
     private Response.ResponseBuilder rb;

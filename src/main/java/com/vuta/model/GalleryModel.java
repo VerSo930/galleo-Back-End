@@ -26,19 +26,6 @@ public class GalleryModel {
         this.photos = new ArrayList<>();
     }
 
-    public GalleryModel(int id, int userId, String name, String description, long createdAt, long updatedAt, boolean isPrivate, List<PhotoModel> photos, int coverImage, int views) {
-        this.id = id;
-        this.userId = userId;
-        this.name = name;
-        this.description = description;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.isPrivate = isPrivate;
-        this.photos = photos;
-        this.coverImage = coverImage;
-        this.views = views;
-    }
-
     @Override
     public String toString() {
         return "GalleryModel{" +

@@ -36,6 +36,7 @@ public class GalleryDao {
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
                 galleryList.add(mapGallery(rs));
+                this.gallery.setPhotos(new PhotoDao().getByGalleryId(this.gallery.getId()));
             }
             // close prepared statement
             ps.close();
@@ -94,6 +95,7 @@ public class GalleryDao {
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
                this.gallery = mapGallery(rs);
+               this.gallery.setPhotos(new PhotoDao().getByGalleryId(this.gallery.getId()));
             }
             // close prepared statement
             ps.close();
@@ -119,6 +121,7 @@ public class GalleryDao {
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
                 galleryList.add(mapGallery(rs));
+                this.gallery.setPhotos(new PhotoDao().getByGalleryId(this.gallery.getId()));
             }
             // close prepared statement
             ps.close();

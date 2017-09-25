@@ -7,12 +7,8 @@ import com.vuta.helpers.PhotoTools;
 import com.vuta.model.ErrorModel;
 import com.vuta.model.PhotoModel;
 import org.apache.commons.io.IOUtils;
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -145,8 +141,8 @@ public class PhotoController {
     public Response upload(MultipartFormDataInput input, String servletPath) {
 
         try {
-            PhotoTools.uploadPhoto(input, servletPath);
-            this.rb = Response.ok();
+
+            this.rb = Response.ok(PhotoTools.uploadPhoto(input, servletPath));
             this.rb.status(200);
         } catch (Exception e) {
             e.printStackTrace();

@@ -54,6 +54,7 @@ public class GalleryController {
         }
         return this.rb.build();
     }
+
     /** Get all gallery's of a specific User.
      * This is done by providing a valid user id */
     public Response getByUserId(int userId) {

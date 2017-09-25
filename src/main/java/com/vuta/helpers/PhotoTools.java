@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -88,15 +89,18 @@ public class PhotoTools {
     /**
      * Upload files
      */
-    public static void uploadPhoto(MultipartFormDataInput input, String servletPath) throws Exception {
+    public static List<String> uploadPhoto(MultipartFormDataInput input, String servletPath) throws Exception {
 
 
-
+        List<String> files = new ArrayList<>();
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
         List<InputPart> inputParts = uploadForm.get("image");
 
         // loop trough forms parts
         for (InputPart inputPart : inputParts) {
+
+                // generate unique id
+                String id = generateUniqueId();
 
                 // get headers map
                 MultivaluedMap<String, String> header = inputPart.getHeaders();
@@ -105,8 +109,11 @@ public class PhotoTools {
                 InputStream inputStream = inputPart.getBody(InputStream.class, null);
 
                 // write file to server
-                writeFile(IOUtils.toByteArray(inputStream),  servletPath  + generateUniqueId() + "." + getFileExtension(header));
+                writeFile(IOUtils.toByteArray(inputStream),  servletPath  + id + "." + getFileExtension(header));
+            files.add(id + "." + getFileExtension(header));
         }
+
+        return files;
     }
 
 }

@@ -3,7 +3,7 @@ package com.vuta.controllers;
 import com.vuta.dao.UserDao;
 import com.vuta.helpers.JWT;
 import com.vuta.helpers.UserTools;
-import com.vuta.model.ErrorModel;
+import com.vuta.model.ResponseMessage;
 import com.vuta.model.UserModel;
 
 import javax.ws.rs.core.Response;
@@ -14,57 +14,55 @@ import javax.ws.rs.core.Response;
 public class AuthenticationController {
 
     private UserModel Puser;
-    private Response.ResponseBuilder rb;
     private UserDao dao;
 
     public AuthenticationController()  {
-
+        this.dao = new UserDao();
     }
 
     public Response login(UserModel user) {
         try {
-            this.dao = new UserDao();
+            // check if user data is set
             if (!UserTools.checkLogin(user))
-                return Response.ok(new ErrorModel("User data must be filled!")).status(400).build();
+                return Response.ok(new ResponseMessage("User data must be filled!")).status(400).build();
+
             this.Puser = this.dao.getById(user);
-            this.rb = Response.ok(this.Puser);
-            this.rb.header("Token", JWT.generate(this.Puser));
-            this.rb.status(200);
+            return Response.ok(this.Puser).status(200).header("Token", JWT.generate(this.Puser)).build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
-            this.rb.status(400);
-            e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage())).status(500).header("Token", JWT.generate(this.Puser)).build();
         }
-        return this.rb.build();
+
     }
 
     public Response getAllUsers() {
         try {
-            this.dao = new UserDao();
-            this.rb = Response.ok(dao.getAll());
-            this.rb.status(200);
-            return rb.build();
+            return  Response.ok(dao.getAll()).status(200).build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
-            this.rb.status(500);
-            return rb.build();
+            return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
         }
 
     }
 
     public Response register(UserModel user) {
         try {
-            this.dao = new UserDao();
             if (!UserTools.checkRegister(user))
-                return Response.ok(new ErrorModel("You must provide all user details")).status(400).build();
-            this.rb = Response.ok(this.dao.insert(user));
-            this.rb.status(200);
-
+                return Response.ok(new ResponseMessage("You must provide all user details")).status(400).build();
+            return Response.ok(this.dao.insert(user)).status(200).build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
-            this.rb.status(400);
-            e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
         }
-        return this.rb.build();
+    }
+
+    public Response delete(UserModel user) {
+        try {
+            if (user.getId() == 0)
+                return Response.ok(new ResponseMessage("You must provide all user details")).status(400).build();
+            if(this.dao.delete(user.getId()))
+                return Response.ok(new ResponseMessage("User deleted successfully")).status(200).build();
+            else
+                return Response.ok(new ResponseMessage("User can't be deleted")).status(400).build();
+        } catch (Exception e) {
+            return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
+        }
     }
 }

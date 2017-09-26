@@ -26,17 +26,19 @@ public class GalleryDao {
 
     public ArrayList<GalleryModel> getAll() throws Exception {
 
+        GalleryModel galleryModel;
+
         try {
             // prepare  statement
             ps = connection.prepareStatement("SELECT * FROM Gallery");
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
-            int i = 0;
             // loop trough result set,
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
-                galleryList.add(mapGallery(rs));
-                this.gallery.setPhotos(new PhotoDao().getByGalleryId(this.gallery.getId()));
+                galleryModel = mapGallery(rs);
+                galleryModel.setPhotos(new PhotoDao().getByGalleryId(galleryModel.getId()));
+                galleryList.add(galleryModel);
             }
             // close prepared statement
             ps.close();
@@ -111,6 +113,7 @@ public class GalleryDao {
     }
 
     public ArrayList<GalleryModel> getByUserId(int userId) throws Exception {
+        GalleryModel galleryModel;
         try {
             // prepare  statement
             ps = connection.prepareStatement("SELECT * FROM Gallery WHERE userId=?");
@@ -120,8 +123,9 @@ public class GalleryDao {
             // loop trough result set,
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
-                galleryList.add(mapGallery(rs));
-                this.gallery.setPhotos(new PhotoDao().getByGalleryId(this.gallery.getId()));
+                galleryModel = mapGallery(rs);
+                galleryModel.setPhotos(new PhotoDao().getByGalleryId(galleryModel.getId()));
+                galleryList.add(galleryModel);
             }
             // close prepared statement
             ps.close();

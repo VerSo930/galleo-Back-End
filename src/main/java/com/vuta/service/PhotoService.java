@@ -3,9 +3,11 @@ package com.vuta.service;
 import com.vuta.Constants;
 import com.vuta.controllers.PhotoController;
 import com.vuta.model.PhotoModel;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -71,7 +73,8 @@ public class PhotoService {
     @POST
     @Path("/upload")
     @Consumes("multipart/form-data")
-    @Produces("text/plain")
+    @Produces(Constants.CONTENT_TYPE)
+    @RolesAllowed({ "USER", "ADMIN" })
     public Response uploadFile(MultipartFormDataInput input) {
         System.out.println(servletContext.getRealPath("/WEB-INF"));
         return controller.upload(input, servletContext.getRealPath("/WEB-INF/"+ Constants.PHOTO_UPLOAD_PATH));

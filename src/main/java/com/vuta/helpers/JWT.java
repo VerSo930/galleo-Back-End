@@ -18,10 +18,12 @@ import java.util.Set;
 
 public class JWT {
 
+    public static int userId = 0;
+
     public static void verify(String jwt, Set<String> roles) throws Exception {
 
         try {
-            //This will throw an exception if it is not a signed JWS (as expected)
+            // This will throw an exception if it is not a signed JWS (as expected)
             Claims claims = Jwts.parser()
                     .setSigningKey(DatatypeConverter.parseBase64Binary(Constants.JWT_SECRET))
                     .parseClaimsJws(jwt).getBody();
@@ -31,9 +33,9 @@ public class JWT {
             {
                 throw new Exception();
             }
+            userId = Integer.parseInt(claims.getId());
 
             // TODO: Delete after debug finished
-            System.out.println("ID: " + claims.getId());
             System.out.println("Audience: " + claims.getAudience());
             System.out.println("Subject: " + claims.getSubject());
             System.out.println("Issuer: " + claims.getIssuer());
@@ -49,6 +51,7 @@ public class JWT {
         Date date = new Date(System.currentTimeMillis());
         return Jwts.builder()
                 .setIssuer("Galleo API")
+                .setId(user.getId()+"")
                 .setSubject("Token")
                 .setAudience("USER")
                 .setIssuedAt(date)
@@ -59,5 +62,12 @@ public class JWT {
                         TextCodec.BASE64.decode(Constants.JWT_SECRET)
                 )
                 .compact();
+    }
+
+    public static int getUserId(String authorization) {
+
+        String[] payloads = authorization.split("\\.");
+        return 0;
+
     }
 }

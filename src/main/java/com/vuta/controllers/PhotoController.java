@@ -1,20 +1,12 @@
 package com.vuta.controllers;
 
-import com.sun.org.apache.regexp.internal.RE;
-import com.vuta.Constants;
 import com.vuta.dao.PhotoDao;
 import com.vuta.helpers.PhotoTools;
-import com.vuta.model.ErrorModel;
+import com.vuta.model.ResponseMessage;
 import com.vuta.model.PhotoModel;
-import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by vuta on 25/09/2017.
@@ -36,7 +28,7 @@ public class PhotoController {
             this.rb.status(200);
             return rb.build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(500);
             return rb.build();
         }
@@ -47,12 +39,12 @@ public class PhotoController {
         try {
             this.dao = new PhotoDao();
             if (!PhotoTools.checkInsert(photo))
-                return Response.ok(new ErrorModel("You must provide all photo details")).status(400).build();
+                return Response.ok(new ResponseMessage("You must provide all photo details")).status(400).build();
             this.rb = Response.ok(this.dao.insert(photo));
             this.rb.status(200);
 
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }
@@ -69,7 +61,7 @@ public class PhotoController {
             this.rb = Response.ok(dao.getByUserId(userId));
             this.rb.status(200);
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }
@@ -84,7 +76,7 @@ public class PhotoController {
             this.rb = Response.ok(dao.getById(photoId));
             this.rb.status(200);
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }
@@ -99,7 +91,7 @@ public class PhotoController {
             this.rb = Response.ok(dao.getByGalleryId(galleryId));
             this.rb.status(200);
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }
@@ -115,7 +107,7 @@ public class PhotoController {
             this.rb = Response.ok();
             this.rb.status(200);
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }
@@ -131,7 +123,7 @@ public class PhotoController {
             this.rb = Response.ok();
             this.rb.status(200);
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }

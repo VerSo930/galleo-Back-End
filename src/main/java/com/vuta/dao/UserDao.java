@@ -18,14 +18,14 @@ public class UserDao {
 
     private ArrayList<UserModel> usersList = new ArrayList<>();
 
-    public UserDao() throws Exception {
+    public UserDao() {
         // get a connection from tomcat pool
-        connection = Database.getConnection();
     }
 
     public ArrayList<UserModel> getAll() throws Exception {
 
         try {
+            connection = Database.getConnection();
             // prepare  statement
             ps = connection.prepareStatement("SELECT * FROM User");
             // execute query and get the result set
@@ -51,6 +51,7 @@ public class UserDao {
     public UserModel insert(UserModel user) throws Exception {
 
         try {
+            connection = Database.getConnection();
             // prepare  statement
             ps = connection.prepareStatement("INSERT INTO User (name, lastName, email, userName, password, " +
                     " isEnabled, avatar, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
@@ -91,8 +92,9 @@ public class UserDao {
                 "hbsc", new Date().getTime(), new Date().getTime(), true, 1, 1);
     }
 
-    public void delete(int id) throws Exception {
+    public boolean delete(int id) throws Exception {
         try {
+            connection = Database.getConnection();
             // prepare  statement
             ps = connection.prepareStatement("DELETE FROM User WHERE id=?", Statement.RETURN_GENERATED_KEYS);
 
@@ -106,6 +108,7 @@ public class UserDao {
             }
             // close prepared statement
             ps.close();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception(e.getMessage());

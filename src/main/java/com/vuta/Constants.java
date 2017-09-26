@@ -1,6 +1,9 @@
 package com.vuta;
 
+import com.vuta.controllers.JwtController;
+import com.vuta.helpers.JWT;
 import com.vuta.model.UserModel;
+import io.jsonwebtoken.Jwts;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -23,10 +26,23 @@ public class Constants {
 
     // Authentication
     public static final String JWT_SECRET = "pCu/ghCamq9+wS/CG16JJ1NBqur2Ckzl522AA8xbhSQ=";
-    public static final int JWT_EXPIRATION_TIME = 5;
+    public static final int JWT_EXPIRATION_TIME = 60*24;
 
 
     public static void main(String[] args0) {
-        System.out.println(UUID.randomUUID().toString());
+
+        UserModel user = new UserModel();
+        user.setId(1);
+        user.setEmail("verso@gmail.com");
+        user.setRole(1);
+
+//        System.out.println(JWT.generate(user));
+        JwtController jwt = new JwtController();
+        System.out.println(jwt.verifyToken(jwt.generate(user)));
+        System.out.println(jwt.generate(user));
+
+
+       // assert Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws("esyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJHYWxsZW8gQVBJIiwianRpIjoiMSIsInN1YiI6IlRva2VuIiwiYXVkIjoiVVNFUiIsImlhdCI6MTUwNjQyNzQ4MCwiZXhwIjoxNTA2NDI3NzgwLCJ1c2VySWQiOjEsImVtYWlsOiI6InZlcnNvQGdtYWlsLmNvbSJ9.7IuEbS-Z7DYXJ7i0WHK3z-Hu-EzWr4Vp3zMbnnX1nWc").getBody().getAudience().equals("Joe");
+
     }
 }

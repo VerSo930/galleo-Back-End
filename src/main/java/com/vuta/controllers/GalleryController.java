@@ -1,14 +1,9 @@
 package com.vuta.controllers;
 
-import com.google.common.base.Strings;
 import com.vuta.dao.GalleryDao;
-import com.vuta.dao.UserDao;
 import com.vuta.helpers.GalleryTools;
-import com.vuta.helpers.JWT;
-import com.vuta.helpers.UserTools;
-import com.vuta.model.ErrorModel;
+import com.vuta.model.ResponseMessage;
 import com.vuta.model.GalleryModel;
-import com.vuta.model.UserModel;
 
 import javax.ws.rs.core.Response;
 
@@ -32,7 +27,7 @@ public class GalleryController {
             this.rb.status(200);
             return rb.build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(500);
             return rb.build();
         }
@@ -43,12 +38,12 @@ public class GalleryController {
         try {
             this.dao = new GalleryDao();
             if (!GalleryTools.checkInsert(gallery))
-                return Response.ok(new ErrorModel("You must provide all user details")).status(400).build();
+                return Response.ok(new ResponseMessage("You must provide all user details")).status(400).build();
             this.rb = Response.ok(this.dao.insert(gallery));
             this.rb.status(200);
 
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }
@@ -65,7 +60,7 @@ public class GalleryController {
             this.rb = Response.ok(dao.getByUserId(userId));
             this.rb.status(200);
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }
@@ -80,7 +75,7 @@ public class GalleryController {
             this.rb = Response.ok(dao.getById(galleryId));
             this.rb.status(200);
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }
@@ -96,7 +91,7 @@ public class GalleryController {
             this.rb = Response.ok();
             this.rb.status(200);
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }
@@ -112,7 +107,7 @@ public class GalleryController {
             this.rb = Response.ok();
             this.rb.status(200);
         } catch (Exception e) {
-            this.rb = Response.ok(new ErrorModel(e.getMessage()));
+            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
             this.rb.status(400);
             e.printStackTrace();
         }

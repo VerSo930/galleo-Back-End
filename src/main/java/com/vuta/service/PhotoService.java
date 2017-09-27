@@ -1,8 +1,10 @@
 package com.vuta.service;
 
+import com.google.common.net.MediaType;
 import com.vuta.Constants;
 import com.vuta.controllers.PhotoController;
 import com.vuta.model.PhotoModel;
+import com.vuta.model.ResponseMessage;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
@@ -12,7 +14,10 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 
 /**
@@ -28,44 +33,44 @@ public class PhotoService {
     ServletContext servletContext;
     private PhotoController controller = new PhotoController();
 
-    @Path("/getAll")
-    @GET
     @PermitAll
+    @Path("/")
+    @GET
     public Response getAllPhotos() {
         return controller.getAll();
     }
 
-    @Path("/getById")
-    @GET
     @PermitAll
-    public Response getPhotoById(@QueryParam("id") int id) {
+    @Path("/{id}")
+    @GET
+    public Response getPhotoById(@PathParam("id") int id) {
         return controller.getById(id);
     }
 
-    @Path("/getByGalleryId")
-    @GET
     @PermitAll
-    public Response getPhotoByGalleryId(@QueryParam("galleryId") int galleryId) {
+    @Path("/gallery/{id}")
+    @GET
+    public Response getPhotoByGalleryId(@PathParam("id") int galleryId) {
         return controller.getByGalleryId(galleryId);
     }
 
-    @Path("/insert")
-    @POST
     @PermitAll
+    @Path("/")
+    @POST
     public Response insertPhoto(PhotoModel photo) {
         return controller.insert(photo);
     }
 
-    @Path("/delete")
-    @POST
-    @PermitAll
-    public Response deletePhoto(PhotoModel photo) {
-        return controller.delete(photo.getId());
+    @RolesAllowed({"ADMIN", "USER"})
+    @Path("/{id}")
+    @DELETE
+    public Response deletePhoto(@PathParam("id") int id) {
+        return controller.delete(id);
     }
 
-    @Path("/update")
-    @POST
-    @PermitAll
+    @RolesAllowed({"ADMIN", "USER"})
+    @Path("/")
+    @PUT
     public Response updatePhoto(PhotoModel photo) {
         return controller.update(photo);
     }
@@ -80,12 +85,17 @@ public class PhotoService {
         return controller.upload(input, servletContext.getRealPath("/WEB-INF/"+ Constants.PHOTO_UPLOAD_PATH));
     }
 
-    @Path("/showPhoto")
+    @PermitAll
+    @Path("/resource/{id}")
     @GET
-    @Consumes(Constants.CONTENT_TYPE)
-    @Produces({"image/png", "image/jpeg", "image/gif"})
-    public Response getPhoto(@QueryParam("id") String id) {
-        File repositoryFile = new File(servletContext.getRealPath("/WEB-INF/"+ Constants.PHOTO_UPLOAD_PATH + id));
-        return Response.ok(repositoryFile).status(200).build();
+   // @Consumes(Constants.CONTENT_TYPE)
+    @Produces({"image/jpeg", "image/gif"})
+    public Response getPhoto(@PathParam("id") String id) {
+
+            File image = new File(servletContext.getRealPath("/WEB-INF/"+ Constants.PHOTO_UPLOAD_PATH + id));
+            return Response.ok(image)
+                    .status(200).build();
+
+
     }
 }

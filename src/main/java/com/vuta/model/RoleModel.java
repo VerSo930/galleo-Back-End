@@ -14,10 +14,9 @@ public class RoleModel {
     public RoleModel() {
     }
 
-    public RoleModel(int id, String name, List<String> permissions) {
+    public RoleModel(int id, String name) {
         this.id = id;
         this.name = name;
-        this.permissions = permissions;
     }
 
     public int getId() {

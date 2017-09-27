@@ -1,12 +1,10 @@
 package com.vuta.dao;
 
 import com.vuta.helpers.Database;
-import com.vuta.model.RoleModel;
 import com.vuta.model.UserModel;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by verso_dxr17un on 9/23/2017.
@@ -18,22 +16,21 @@ public class UserDao {
 
     private ArrayList<UserModel> usersList = new ArrayList<>();
 
-    public UserDao() {
-        // get a connection from tomcat pool
-    }
+    public UserDao() {}
 
     public ArrayList<UserModel> getAll() throws Exception {
-
+            UserModel user = new UserModel();
         try {
             connection = Database.getConnection();
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM User");
+            ps = connection.prepareStatement("SELECT * FROM User WHERE isEnabled=1");
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
             // loop trough result set,
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
-                usersList.add(mapUser(rs));
+                mapUser(rs, user);
+                usersList.add(user);
             }
             // close prepared statement
             ps.close();
@@ -81,15 +78,83 @@ public class UserDao {
         return user;
     }
 
+    public int enableUser(int userId) throws Exception {
+        int count;
+        try {
+            connection = Database.getConnection();
+            // prepare  statement
+            ps = connection.prepareStatement("UPDATE User SET isEnabled = 1 WHERE id = ? AND isEnabled=0", Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, userId);
 
-    public UserModel getById(UserModel user) throws Exception {
-        return new UserModel(1, "Alex", "Vuta", "verso.930@gmail.com", "VerSo930",
-                "hbsc", new Date().getTime(), new Date().getTime(), true, 1, 1);
+            // execute query and get the result set
+            count = ps.executeUpdate();
+
+            // close prepared statement
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+        } finally {
+            // put back connection in tomcat pool
+            Database.close(connection);
+        }
+        return count;
+
     }
 
-    public UserModel add(UserModel user) {
-        return new UserModel(1, "Alex", "Vuta", "verso.930@gmail.com", "VerSo930",
-                "hbsc", new Date().getTime(), new Date().getTime(), true, 1, 1);
+    public UserModel getById(int userId) throws Exception {
+        UserModel user = new UserModel();
+        try {
+            connection = Database.getConnection();
+            // prepare  statement
+            ps = connection.prepareStatement("SELECT * FROM User WHERE id=?");
+            ps.setInt(1, userId);
+            // execute query and get the result set
+            ResultSet rs = ps.executeQuery();
+            // loop trough result set,
+            // map each row to a new user object and add it to user ArrayList
+            while (rs.next()) {
+               mapUser(rs, user);
+            }
+            // close prepared statement
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+        } finally {
+            // put back connection in tomcat pool
+            Database.close(connection);
+        }
+        return user;
+    }
+
+    public UserModel login(String username, String password) throws Exception {
+        UserModel user = null;
+        try {
+            connection = Database.getConnection();
+            // prepare  statement
+            ps = connection.prepareStatement("SELECT * FROM User WHERE userName=? AND password=?");
+            ps.setString(1, username);
+            ps.setString(2, password);
+            // execute query and get the result set
+            ResultSet rs = ps.executeQuery();
+            // loop trough result set,
+            // map each row to a new user object and add it to user ArrayList
+            while (rs.next()) {
+                user = new UserModel();
+                mapUser(rs, user);
+            }
+            // close prepared statement
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+        } finally {
+            // put back connection in tomcat pool
+            Database.close(connection);
+        }
+
+        return user;
     }
 
     public boolean delete(int id) throws Exception {
@@ -118,28 +183,23 @@ public class UserDao {
         }
     }
 
-    public void update(UserModel user) throws Exception {
+    private void mapUser(ResultSet rs, UserModel user) throws Exception {
 
-    }
-
-    private UserModel mapUser(ResultSet rs) throws Exception {
-
-        UserModel user = new UserModel();
         // Map all query's columns to UserModel
-        while (rs.next()) {
             user.setId(rs.getInt("id"));
             user.setName(rs.getString("name"));
             user.setLastName(rs.getString("lastName"));
             user.setEmail(rs.getString("email"));
-            user.setPassword(rs.getString("password"));
+            //user.setPassword(rs.getString("password"));
             user.setUserName(rs.getString("userName"));
             user.setCreatedAt(rs.getTimestamp("createdAt").getTime());
-            user.setCreatedAt(rs.getTimestamp("lastActivity").getTime());
+            if(rs.getTimestamp("lastActivity") != null)
+                user.setLastActivity(rs.getTimestamp("lastActivity").getTime());
             user.setEnabled(rs.getBoolean("isEnabled"));
+
             user.setAvatar(rs.getInt("avatar"));
             user.setRole(rs.getInt("avatar"));
-        }
-        return user;
+
     }
 
     private void mapUserToPs(UserModel user) throws Exception {

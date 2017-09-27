@@ -6,10 +6,13 @@ import com.vuta.controllers.JwtController;
 import com.vuta.helpers.JWT;
 import com.vuta.model.ResponseMessage;
 import com.vuta.model.UserModel;
+import io.jsonwebtoken.Claims;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 /**
@@ -22,12 +25,12 @@ import javax.ws.rs.core.Response;
 public class UserService {
 
     private AuthenticationController controller = new AuthenticationController();
-    private JwtController jwtController = new JwtController();
+
 
     @PermitAll
     @POST
     @Path("/login")
-    public Response loginUser(@HeaderParam("Authorization") String authorization, UserModel user) {
+    public Response loginUser(UserModel user) {
         return this.controller.login(user);
     }
 
@@ -38,18 +41,27 @@ public class UserService {
         return this.controller.register(user);
     }
 
-    @PermitAll
-    @POST
-    @Path("/delete")
-    public Response deleteUser(@HeaderParam("Authorization") String authorization, UserModel user) {
-        return this.controller.delete(user);
+    @RolesAllowed({"ADMIN"})
+    @DELETE
+    @Path("/{id}")
+    public Response deleteUser(@PathParam("id") int userId) {
+        return this.controller.delete(userId);
+    }
+
+    @RolesAllowed({"ADMIN"})
+    @GET
+    @Path("/{id}")
+    public Response getUserById(@PathParam("id") int userId) {
+        return this.controller.getById(userId);
     }
 
     @RolesAllowed("USER")
     @POST
     @Path("/test")
-    public Response test(@HeaderParam("Authorization") String authorization, UserModel user) {
-        System.out.println("UserId:" + jwtController.getClaims().getIssuer());
+    public Response test(@Context Claims claims,
+                         @HeaderParam("Authorization") String authorization,
+                         UserModel user) {
+        controller.setJwtClaims(claims);
         return Response.ok(new ResponseMessage("OK")).build();
     }
 

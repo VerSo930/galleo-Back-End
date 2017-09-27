@@ -34,12 +34,11 @@ public class Constants {
         UserModel user = new UserModel();
         user.setId(1);
         user.setEmail("verso@gmail.com");
-        user.setRole(1);
+        user.setRole(2);
 
 //        System.out.println(JWT.generate(user));
         JwtController jwt = new JwtController();
-        System.out.println(jwt.verifyToken(jwt.generate(user)));
-        System.out.println(jwt.generate(user));
+        System.out.println(jwt.generateToken(user));
 
 
        // assert Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws("esyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJHYWxsZW8gQVBJIiwianRpIjoiMSIsInN1YiI6IlRva2VuIiwiYXVkIjoiVVNFUiIsImlhdCI6MTUwNjQyNzQ4MCwiZXhwIjoxNTA2NDI3NzgwLCJ1c2VySWQiOjEsImVtYWlsOiI6InZlcnNvQGdtYWlsLmNvbSJ9.7IuEbS-Z7DYXJ7i0WHK3z-Hu-EzWr4Vp3zMbnnX1nWc").getBody().getAudience().equals("Joe");

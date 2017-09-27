@@ -23,7 +23,7 @@ public class UserTools {
         if(user == null) {
             return false;
         }
-        if(Strings.isNullOrEmpty(user.getEmail()) || Strings.isNullOrEmpty(user.getPassword())) {
+        if(Strings.isNullOrEmpty(user.getUserName()) || Strings.isNullOrEmpty(user.getPassword())) {
             return false;
         }
         return true;

@@ -1,6 +1,7 @@
 package com.vuta.helpers;
 
 import com.vuta.Constants;
+import com.vuta.model.RoleModel;
 import com.vuta.model.UserModel;
 
 import io.jsonwebtoken.Claims;
@@ -9,8 +10,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
 
 import javax.xml.bind.DatatypeConverter;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by vuta on 28/06/2017.
@@ -18,42 +18,50 @@ import java.util.Set;
 
 public class JWT {
 
-    public static int userId = 0;
+    private static final HashMap<Integer, String> roles = new HashMap<>();
 
-    public static void verify(String jwt, Set<String> roles) throws Exception {
-
-        try {
-            // This will throw an exception if it is not a signed JWS (as expected)
-            Claims claims = Jwts.parser()
-                    .setSigningKey(DatatypeConverter.parseBase64Binary(Constants.JWT_SECRET))
-                    .parseClaimsJws(jwt).getBody();
-
-            // If token doesn't contain the requested role, throw exception
-            if(!roles.contains(claims.getAudience()))
-            {
-                throw new Exception();
-            }
-            userId = Integer.parseInt(claims.getId());
-
-            // TODO: Delete after debug finished
-            System.out.println("Audience: " + claims.getAudience());
-            System.out.println("Subject: " + claims.getSubject());
-            System.out.println("Issuer: " + claims.getIssuer());
-            System.out.println("Expiration: " + claims.getExpiration());
-
-        } catch (Exception e){
-            throw new Exception( "Not allowed [ BAD SIGNATURE ]");
-        }
-
+     static {
+        roles.put(1, "ADMIN"); // ADMIN
+        roles.put(2, "USER"); // USER
+        roles.put(3, "VISITOR"); // VISITOR
     }
 
-    public static String generate(UserModel user) {
+    public static int getRoleId(String roleName) throws Exception {
+         if(roles.containsValue(roleName)) {
+             for (Map.Entry<Integer, String> entry: roles.entrySet()) {
+                 if(Objects.equals(roleName, entry.getValue()))
+                     return entry.getKey();
+             }
+         }
+        throw new Exception("Wrong user role");
+    }
+
+    public static String getRoleName(int roleId) throws Exception {
+        if(roles.containsKey(roleId)) {
+            for (Map.Entry<Integer, String> entry: roles.entrySet()) {
+                if(Objects.equals(roleId, entry.getKey()))
+                    return entry.getValue();
+            }
+        }
+        throw new Exception("Wrong user role");
+    }
+
+
+    public static Claims verify(String token) throws Exception  {
+
+            // This will throw an exception if it is not a signed JWS (as expected)
+        return Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(Constants.JWT_SECRET))
+                .parseClaimsJws(token).getBody();
+    }
+
+    public static String generate(UserModel user) throws Exception {
         Date date = new Date(System.currentTimeMillis());
         return Jwts.builder()
                 .setIssuer("Galleo API")
                 .setId(user.getId()+"")
                 .setSubject("Token")
-                .setAudience("USER")
+                .setAudience(JWT.getRoleName(user.getRole()))
                 .setIssuedAt(date)
                 .setExpiration(new Date(new Date(System.currentTimeMillis()).getTime() + (Constants.JWT_EXPIRATION_TIME * 60000)))
                 .claim("userId", user.getId())
@@ -62,12 +70,5 @@ public class JWT {
                         TextCodec.BASE64.decode(Constants.JWT_SECRET)
                 )
                 .compact();
-    }
-
-    public static int getUserId(String authorization) {
-
-        String[] payloads = authorization.split("\\.");
-        return 0;
-
     }
 }

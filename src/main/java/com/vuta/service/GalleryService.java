@@ -5,6 +5,7 @@ import com.vuta.controllers.GalleryController;
 import com.vuta.model.GalleryModel;
 
 import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
@@ -18,44 +19,44 @@ public class GalleryService {
 
     private GalleryController controller = new GalleryController();
 
-    @Path("/getAll")
+    @Path("/")
     @GET
     @PermitAll
     public Response getAllGallery() {
         return controller.getAll();
     }
 
-    @Path("/getById")
+    @Path("/{id}")
     @GET
     @PermitAll
-    public Response getGalleryById(@QueryParam("id") int id) {
+    public Response getGalleryById(@PathParam("id") int id) {
         return controller.getById(id);
     }
 
-    @Path("/getByUserId")
+    @Path("/user/{id}")
     @GET
     @PermitAll
-    public Response getGalleryByUserId(@QueryParam("id") int id) {
+    public Response getGalleryByUserId(@PathParam("id") int id) {
         return controller.getByUserId(id);
     }
 
-    @Path("/insert")
+    @RolesAllowed({"ADMIN", "USER"})
+    @Path("/")
     @POST
-    @PermitAll
     public Response insertGallery(GalleryModel gallery) {
         return controller.insert(gallery);
     }
 
-    @Path("/delete")
-    @POST
-    @PermitAll
-    public Response deleteGallery( GalleryModel gallery) {
-        return controller.delete(gallery.getId());
+    @RolesAllowed({"ADMIN", "USER"})
+    @Path("/{id}")
+    @DELETE
+    public Response deleteGallery(@PathParam("id") int id) {
+        return controller.delete(id);
     }
 
-    @Path("/update")
-    @POST
-    @PermitAll
+    @RolesAllowed({"ADMIN", "USER"})
+    @Path("/")
+    @PUT
     public Response updateGallery(GalleryModel gallery) {
         return controller.update(gallery);
     }

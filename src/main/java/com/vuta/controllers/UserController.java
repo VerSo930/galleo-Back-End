@@ -13,12 +13,12 @@ import java.util.Objects;
 /**
  * Created by verso_dxr17un on 9/23/2017.
  */
-public class AuthenticationController {
+public class UserController {
 
     private UserDao dao;
     private JwtController jwtController;
 
-    public AuthenticationController()  {
+    public UserController()  {
         this.dao = new UserDao();
         this.jwtController = new JwtController();
     }
@@ -45,7 +45,9 @@ public class AuthenticationController {
             if(!user.isEnabled()){
                 dao.enableUser(user.getId());
             }
-            return Response.ok(user).status(200).header("Authorization", this.jwtController.generateToken(user)).build();
+
+            System.out.println(this.jwtController.generateToken(user));
+            return Response.ok(user).header("Authorization", this.jwtController.generateToken(user)).status(200).build();
         } catch (Exception e) {
             return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
         }
@@ -99,10 +101,11 @@ public class AuthenticationController {
         try {
             if (userId == 0)
                 return Response.ok(new ResponseMessage("You must provide all user details")).status(400).build();
-            if(this.dao.delete(userId))
+            if(this.dao.delete(userId)) {
                 return Response.ok(new ResponseMessage("User deleted successfully")).status(200).build();
-            else
+            } else {
                 return Response.ok(new ResponseMessage("User can't be deleted")).status(400).build();
+            }
         } catch (Exception e) {
             return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
         }

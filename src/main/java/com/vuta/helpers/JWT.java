@@ -1,7 +1,6 @@
 package com.vuta.helpers;
 
 import com.vuta.Constants;
-import com.vuta.model.RoleModel;
 import com.vuta.model.UserModel;
 
 import io.jsonwebtoken.Claims;

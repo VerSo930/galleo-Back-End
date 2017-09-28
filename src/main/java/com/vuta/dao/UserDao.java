@@ -8,18 +8,29 @@ import java.util.ArrayList;
 
 /**
  * Created by verso_dxr17un on 9/23/2017.
+ * DAO METHODS:
+ * getAll() : Arraylist<UserModel>
+ * getById(int: id) : UserModel
+ * insert(UserModel: user) : UserModel
+ * login(String: userName, String: password) : UserModel
+ * enableUser(int: userId) : boolean
+ * delete(int: userId) : boolean
  */
+
 public class UserDao {
 
     private static Connection connection;
     private PreparedStatement ps;
-
     private ArrayList<UserModel> usersList = new ArrayList<>();
 
-    public UserDao() {}
+    public UserDao() {
+    }
 
+    /**
+     * Get all users from DATABASE
+     */
     public ArrayList<UserModel> getAll() throws Exception {
-            UserModel user = new UserModel();
+        UserModel user = new UserModel();
         try {
             connection = Database.getConnection();
             // prepare  statement
@@ -45,6 +56,38 @@ public class UserDao {
         return usersList;
     }
 
+    /**
+     * Get user from database with specified ID
+     */
+    public UserModel getById(int userId) throws Exception {
+        UserModel user = new UserModel();
+        try {
+            connection = Database.getConnection();
+            // prepare  statement
+            ps = connection.prepareStatement("SELECT * FROM User WHERE id=?");
+            ps.setInt(1, userId);
+            // execute query and get the result set
+            ResultSet rs = ps.executeQuery();
+            // loop trough result set,
+            // map each row to a new user object and add it to user ArrayList
+            while (rs.next()) {
+                mapUser(rs, user);
+            }
+            // close prepared statement
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+        } finally {
+            // put back connection in tomcat pool
+            Database.close(connection);
+        }
+        return user;
+    }
+
+    /**
+     * Insert new user into DATABASE
+     */
     public UserModel insert(UserModel user) throws Exception {
 
         try {
@@ -57,8 +100,8 @@ public class UserDao {
             mapUserToPs(user);
 
             // execute query and get the result set
-             ps.executeQuery();
-            ResultSet rs =ps.getGeneratedKeys();
+            ps.executeQuery();
+            ResultSet rs = ps.getGeneratedKeys();
 
             // get inserted row id and set to it user object
             while (rs.next()) {
@@ -78,7 +121,10 @@ public class UserDao {
         return user;
     }
 
-    public int enableUser(int userId) throws Exception {
+    /**
+     * Update user status from DISABLED to ENABLED
+     */
+    public boolean enableUser(int userId) throws Exception {
         int count;
         try {
             connection = Database.getConnection();
@@ -88,7 +134,6 @@ public class UserDao {
 
             // execute query and get the result set
             count = ps.executeUpdate();
-
             // close prepared statement
             ps.close();
         } catch (Exception e) {
@@ -98,36 +143,14 @@ public class UserDao {
             // put back connection in tomcat pool
             Database.close(connection);
         }
-        return count;
+        return count != 0;
 
     }
 
-    public UserModel getById(int userId) throws Exception {
-        UserModel user = new UserModel();
-        try {
-            connection = Database.getConnection();
-            // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM User WHERE id=?");
-            ps.setInt(1, userId);
-            // execute query and get the result set
-            ResultSet rs = ps.executeQuery();
-            // loop trough result set,
-            // map each row to a new user object and add it to user ArrayList
-            while (rs.next()) {
-               mapUser(rs, user);
-            }
-            // close prepared statement
-            ps.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(e.getMessage());
-        } finally {
-            // put back connection in tomcat pool
-            Database.close(connection);
-        }
-        return user;
-    }
-
+    /**
+     * Get user from DATABASE that have provided
+     * username and password
+     */
     public UserModel login(String username, String password) throws Exception {
         UserModel user = null;
         try {
@@ -157,7 +180,14 @@ public class UserDao {
         return user;
     }
 
+    /**
+     * Delete user from DATABASE with specific id
+     * This method throw exception if something goes wrong with
+     * the MySql Query
+     */
     public boolean delete(int id) throws Exception {
+
+        int count;
         try {
             connection = Database.getConnection();
             // prepare  statement
@@ -167,13 +197,10 @@ public class UserDao {
             ps.setInt(1, id);
 
             // execute query and get the result set
-            int count = ps.executeUpdate();
-            if(count == 0){
-                throw new Exception("User not deleted");
-            }
+            count = ps.executeUpdate();
+
             // close prepared statement
             ps.close();
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception(e.getMessage());
@@ -181,29 +208,36 @@ public class UserDao {
             // put back connection in tomcat pool
             Database.close(connection);
         }
+
+        return count != 0;
     }
 
+    /**
+     * Set user properties from Result Set returned from DATABASE
+     */
     private void mapUser(ResultSet rs, UserModel user) throws Exception {
 
         // Map all query's columns to UserModel
-            user.setId(rs.getInt("id"));
-            user.setName(rs.getString("name"));
-            user.setLastName(rs.getString("lastName"));
-            user.setEmail(rs.getString("email"));
-            //user.setPassword(rs.getString("password"));
-            user.setUserName(rs.getString("userName"));
-            user.setCreatedAt(rs.getTimestamp("createdAt").getTime());
-            if(rs.getTimestamp("lastActivity") != null)
-                user.setLastActivity(rs.getTimestamp("lastActivity").getTime());
-            user.setEnabled(rs.getBoolean("isEnabled"));
+        user.setId(rs.getInt("id"));
+        user.setName(rs.getString("name"));
+        user.setLastName(rs.getString("lastName"));
+        user.setEmail(rs.getString("email"));
+        //user.setPassword(rs.getString("password"));
+        user.setUserName(rs.getString("userName"));
+        user.setCreatedAt(rs.getTimestamp("createdAt").getTime());
+        if (rs.getTimestamp("lastActivity") != null)
+            user.setLastActivity(rs.getTimestamp("lastActivity").getTime());
+        user.setEnabled(rs.getBoolean("isEnabled"));
 
-            user.setAvatar(rs.getInt("avatar"));
-            user.setRole(rs.getInt("avatar"));
+        user.setAvatar(rs.getInt("avatar"));
+        user.setRole(rs.getInt("role"));
 
     }
 
+    /**
+     * Set user properties to Prepared Statement
+     */
     private void mapUserToPs(UserModel user) throws Exception {
-
         try {
             ps.setString(1, user.getName());
             ps.setString(2, user.getLastName());
@@ -214,6 +248,7 @@ public class UserDao {
             ps.setInt(7, user.getAvatar());
             ps.setInt(8, user.getRole());
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new Exception("One or more user properties are not provided");
         }
     }

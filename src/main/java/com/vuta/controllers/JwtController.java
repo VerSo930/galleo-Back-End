@@ -1,16 +1,9 @@
 package com.vuta.controllers;
 
-import com.vuta.Constants;
 import com.vuta.helpers.JWT;
 import com.vuta.model.UserModel;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.TextCodec;
 
-import javax.xml.bind.DatatypeConverter;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -23,9 +16,6 @@ public class JwtController {
     public JwtController() {
     }
 
-    public JwtController(Claims claims) {
-        this.claims = claims;
-    }
 
     public Boolean verifyToken(String token) {
         try {
@@ -52,6 +42,7 @@ public class JwtController {
         try {
             return JWT.generate(user);
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

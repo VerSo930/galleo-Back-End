@@ -2,12 +2,9 @@ package com.vuta.helpers;
 
 import com.vuta.controllers.JwtController;
 import com.vuta.model.ResponseMessage;
-import io.jsonwebtoken.Claims;
-import org.glassfish.jersey.internal.util.Base64;
 import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ServerResponse;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
@@ -41,47 +38,46 @@ public class RequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
 
-        System.out.println("Filter called");
         ResourceMethodInvoker methodInvoker = (ResourceMethodInvoker) requestContext.getProperty("org.jboss.resteasy.core.ResourceMethodInvoker");
         Method method = methodInvoker.getMethod();
 
+        // If annotation @PermitALL is not present pass trough filter
         if (!method.isAnnotationPresent(PermitAll.class)) {
-            //Access denied for all
+            // Access denied for all
             if (method.isAnnotationPresent(DenyAll.class)) {
                 requestContext.abortWith(ACCESS_FORBIDDEN);
                 return;
             }
 
-            //Get request headers
+            // Get request headers
             final MultivaluedMap<String, String> headers = requestContext.getHeaders();
 
-            //Fetch authorization header
+            // Fetch authorization header
             final List<String> authorization = headers.get(AUTHORIZATION_PROPERTY);
 
-            //If no authorization information present; block access
+            // If no authorization information present; block access
             if (authorization == null || authorization.isEmpty()) {
                 requestContext.abortWith(ACCESS_DENIED);
                 return;
             }
 
-            //Get encoded username and password
+            // Get encoded username and password
             final String token = authorization.get(0);
 
-            System.out.println("Authorization:" + token);
-
+            // Verify provided token signature
             if (!jwtController.verifyToken(token)) {
+                requestContext.abortWith(ACCESS_DENIED);
                 return;
             }
 
-            //Verify user access
+            // Verify user access ROLE
             if (method.isAnnotationPresent(RolesAllowed.class)) {
                 RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
                 Set<String> rolesSet = new HashSet<String>(Arrays.asList(rolesAnnotation.value()));
 
-                //Is user valid?
+                // Is user valid?
                 if (!rolesSet.contains(jwtController.getClaims().getAudience())) {
                     requestContext.abortWith(ACCESS_DENIED);
-                    return;
                 }
             }
         }

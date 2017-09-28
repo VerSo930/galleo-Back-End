@@ -14,7 +14,7 @@ public class UserModel {
     private String password;
     private long createdAt;
     private long lastActivity;
-    private boolean enabled;
+    private boolean isEnabled;
     private int avatar;
     private int role;
 
@@ -26,7 +26,7 @@ public class UserModel {
         this.password = "";
         this.createdAt = 0;
         this.lastActivity = 0;
-        this.enabled = true;
+        this.isEnabled = true;
         this.avatar = 0;
         this.role = 0;
     }
@@ -40,7 +40,7 @@ public class UserModel {
         this.password = password;
         this.createdAt = createdAt;
         this.lastActivity = lastActivity;
-        this.enabled = enabled;
+        this.isEnabled = enabled;
         this.avatar = avatar;
         this.role = role;
     }
@@ -56,7 +56,7 @@ public class UserModel {
                 ", password='" + password + '\'' +
                 ", createdAt=" + createdAt +
                 ", lastActivity=" + lastActivity +
-                ", enabled=" + enabled +
+                ", enabled=" + isEnabled +
                 ", avatar=" + avatar +
                 ", role=" + role +
                 '}';
@@ -127,11 +127,11 @@ public class UserModel {
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return isEnabled;
     }
 
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        this.isEnabled = enabled;
     }
 
     public int getAvatar() {

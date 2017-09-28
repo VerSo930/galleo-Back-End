@@ -17,9 +17,7 @@ public class PhotoController {
     private Response.ResponseBuilder rb;
     private PhotoDao dao;
 
-    public PhotoController()  {
-
-    }
+    public PhotoController()  {}
 
     public Response getAll() {
         try {

@@ -1,9 +1,7 @@
 package com.vuta.service;
 
 import com.vuta.Constants;
-import com.vuta.controllers.AuthenticationController;
-import com.vuta.controllers.JwtController;
-import com.vuta.helpers.JWT;
+import com.vuta.controllers.UserController;
 import com.vuta.model.ResponseMessage;
 import com.vuta.model.UserModel;
 import io.jsonwebtoken.Claims;
@@ -11,7 +9,6 @@ import io.jsonwebtoken.Claims;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
-import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
@@ -24,7 +21,7 @@ import javax.ws.rs.core.Response;
 @Consumes(Constants.CONTENT_TYPE)
 public class UserService {
 
-    private AuthenticationController controller = new AuthenticationController();
+    private UserController controller = new UserController();
 
 
     @PermitAll

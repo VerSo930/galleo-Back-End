@@ -1,15 +1,7 @@
 package com.vuta;
 
 import com.vuta.controllers.JwtController;
-import com.vuta.helpers.JWT;
 import com.vuta.model.UserModel;
-import io.jsonwebtoken.Jwts;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by verso_dxr17un on 9/23/2017.
@@ -34,7 +26,7 @@ public class Constants {
         UserModel user = new UserModel();
         user.setId(1);
         user.setEmail("verso@gmail.com");
-        user.setRole(2);
+        user.setRole(1);
 
 //        System.out.println(JWT.generate(user));
         JwtController jwt = new JwtController();

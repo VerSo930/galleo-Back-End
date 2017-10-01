@@ -1,5 +1,7 @@
 package com.vuta.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by verso_dxr17un on 9/23/2017.
  */
@@ -33,6 +35,7 @@ public class PhotoModel {
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+
         this.isPrivate = isPrivate;
         this.url = url;
     }
@@ -111,7 +114,7 @@ public class PhotoModel {
         this.updatedAt = updatedAt;
     }
 
-    public boolean isPrivate() {
+    public boolean getIsPrivate() {
         return isPrivate;
     }
 

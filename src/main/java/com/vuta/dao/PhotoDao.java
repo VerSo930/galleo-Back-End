@@ -245,7 +245,7 @@ public class PhotoDao {
             ps.setString(2, photo.getName());
             ps.setString(3, photo.getDescription());
             ps.setTimestamp(4, new java.sql.Timestamp(new Date(System.currentTimeMillis()).getTime()));
-            ps.setBoolean(5, photo.isPrivate());
+            ps.setBoolean(5, photo.getIsPrivate());
             ps.setString(6, photo.getUrl());
             ps.setInt(7, photo.getViews());
 
@@ -291,7 +291,7 @@ public class PhotoDao {
             ps.setString(3, photo.getName());
             ps.setString(4, photo.getDescription());
             ps.setTimestamp(5, new java.sql.Timestamp(new Date(System.currentTimeMillis()).getTime()));
-            ps.setBoolean(6, photo.isPrivate());
+            ps.setBoolean(6, photo.getIsPrivate());
             ps.setString(7, photo.getUrl());
             ps.setInt(8, photo.getViews());
         } catch (SQLException e) {

@@ -15,8 +15,19 @@ http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
     <servlet>
         <servlet-name>resteasy-servlet</servlet-name>
         <servlet-class> org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher </servlet-class>
+        <!--<init-param>-->
+            <!--<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>-->
+            <!--<param-value>true</param-value>-->
+        <!--</init-param>-->
         <init-param>
-            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>
+                org.example.webservice.impl,
+                com.fasterxml.jackson.jaxrs.json
+            </param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.disableMoxyJson</param-name>
             <param-value>true</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>

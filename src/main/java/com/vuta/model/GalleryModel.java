@@ -1,5 +1,7 @@
 package com.vuta.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,7 @@ public class GalleryModel {
     private String description;
     private long createdAt;
     private long updatedAt;
+    @JsonProperty("test")
     private boolean isPrivate;
     private List<PhotoModel> photos;
     private int coverImage;
@@ -90,7 +93,7 @@ public class GalleryModel {
         this.updatedAt = updatedAt;
     }
 
-    public boolean isPrivate() {
+    public boolean getIsPrivate() {
         return isPrivate;
     }
 

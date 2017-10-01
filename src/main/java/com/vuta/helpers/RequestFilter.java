@@ -26,12 +26,12 @@ import java.util.Set;
 @Provider
 public class RequestFilter implements ContainerRequestFilter {
 
-    private static final String AUTHORIZATION_PROPERTY = "Authorization";
-    private static final ServerResponse ACCESS_DENIED = new ServerResponse(new ResponseMessage("Access denied to this path"),
+    private  final String AUTHORIZATION_PROPERTY = "Authorization";
+    private  final ServerResponse ACCESS_DENIED = new ServerResponse(new ResponseMessage("Access denied to this path"),
             401, new Headers<Object>());
-    private static final ServerResponse ACCESS_FORBIDDEN = new ServerResponse(new ResponseMessage("Nobody can access this resource"),
+    private  final ServerResponse ACCESS_FORBIDDEN = new ServerResponse(new ResponseMessage("Nobody can access this resource"),
             403, new Headers<Object>());
-    private static final ServerResponse SERVER_ERROR = new ServerResponse(new ResponseMessage("INTERNAL SERVER ERROR"),
+    private  final ServerResponse SERVER_ERROR = new ServerResponse(new ResponseMessage("INTERNAL SERVER ERROR"),
             500, new Headers<Object>());
     private JwtController jwtController = new JwtController();
 
@@ -45,7 +45,7 @@ public class RequestFilter implements ContainerRequestFilter {
         if (!method.isAnnotationPresent(PermitAll.class)) {
             // Access denied for all
             if (method.isAnnotationPresent(DenyAll.class)) {
-                requestContext.abortWith(ACCESS_FORBIDDEN);
+                return ACCESS_FORBIDDEN;
                 return;
             }
 

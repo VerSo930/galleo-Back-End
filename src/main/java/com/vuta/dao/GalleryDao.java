@@ -172,7 +172,7 @@ public class GalleryDao {
             // gallery object to Prepared Statement
             ps.setString(1, gallery.getName());
             ps.setString(2, gallery.getDescription());
-            ps.setBoolean(3, gallery.isPrivate());
+            ps.setBoolean(3, gallery.getIsPrivate());
             ps.setInt(4, gallery.getCoverImage());
             ps.setInt(5, gallery.getViews());
             ps.setInt(6, gallery.getId());
@@ -217,7 +217,7 @@ public class GalleryDao {
             ps.setString(2, gallery.getName());
             ps.setString(3, gallery.getDescription());
             ps.setTimestamp(4, new java.sql.Timestamp(new Date(System.currentTimeMillis()).getTime()));
-            ps.setBoolean(5, gallery.isPrivate());
+            ps.setBoolean(5, gallery.getIsPrivate());
             ps.setInt(6, gallery.getCoverImage());
             ps.setInt(7, gallery.getViews());
         } catch (SQLException e) {

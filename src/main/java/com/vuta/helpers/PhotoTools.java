@@ -1,16 +1,12 @@
 package com.vuta.helpers;
 
 import com.google.common.base.Strings;
-import com.sun.deploy.util.StringUtils;
-import com.vuta.Constants;
+
 import com.vuta.model.PhotoModel;
 import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.File;
 import java.io.FileOutputStream;

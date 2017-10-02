@@ -42,7 +42,7 @@ public class UserController {
             }
 
             // If user is disable, set enabled status on login
-            if(!user.isEnabled()){
+            if(!user.getIsEnabled()){
                 dao.enableUser(user.getId());
             }
 

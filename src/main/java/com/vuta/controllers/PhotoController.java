@@ -56,14 +56,10 @@ public class PhotoController {
             this.dao = new PhotoDao();
             if(userId == 0)
                 throw new Exception("You must provide a User id");
-            this.rb = Response.ok(dao.getByUserId(userId));
-            this.rb.status(200);
+            return Response.ok(dao.getByUserId(userId)).status(200).build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
-            e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
-        return this.rb.build();
     }
 
     public Response getById(int photoId) {
@@ -71,14 +67,10 @@ public class PhotoController {
             this.dao = new PhotoDao();
             if(photoId == 0)
                 throw new Exception("You must provide a Photo id");
-            this.rb = Response.ok(dao.getById(photoId));
-            this.rb.status(200);
+            return Response.ok(dao.getById(photoId)).status(200).build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
-            e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
-        return this.rb.build();
     }
 
     public Response getByGalleryId(int galleryId) {
@@ -86,14 +78,11 @@ public class PhotoController {
             this.dao = new PhotoDao();
             if(galleryId == 0)
                 throw new Exception("You must provide a Gallery id");
-            this.rb = Response.ok(dao.getByGalleryId(galleryId));
-            this.rb.status(200);
+            return Response.ok(dao.getByGalleryId(galleryId)).status(200).build();
+
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
-            e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
-        return this.rb.build();
     }
 
     public Response delete(int photoId) {
@@ -101,31 +90,32 @@ public class PhotoController {
             this.dao = new PhotoDao();
             if(photoId == 0)
                 throw new Exception("You must provide a Photo id");
-            dao.delete(photoId);
-            this.rb = Response.ok();
-            this.rb.status(200);
+
+            if(dao.delete(photoId)) {
+                return Response.ok(new ResponseMessage("Photo with id " + photoId + " was deleted")).status(200).build();
+            } else {
+                return Response.ok(new ResponseMessage("Can't delete Photo with id " + photoId)).status(204).build();
+            }
+
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
-            e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
-        return this.rb.build();
     }
 
     public Response update(PhotoModel photo) {
         try {
             this.dao = new PhotoDao();
             if(!PhotoTools.checkInsert(photo))
-                throw new Exception("You must provide a gallery id");
-            dao.update(photo);
-            this.rb = Response.ok();
-            this.rb.status(200);
+                throw new Exception("You must provide a photo id");
+
+            if(dao.update(photo)) {
+                return Response.ok(new ResponseMessage("Photo with id " + photo.getId() + " was updated")).status(200).build();
+            } else {
+                return Response.ok(new ResponseMessage("Can't update Photo with id " + photo.getId())).status(204).build();
+            }
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
-            e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
-        return this.rb.build();
     }
 
     public Response upload(MultipartFormDataInput input, String servletPath) {

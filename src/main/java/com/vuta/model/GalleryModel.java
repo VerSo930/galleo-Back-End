@@ -20,7 +20,7 @@ public class GalleryModel {
     @JsonProperty("test")
     private boolean isPrivate;
     private List<PhotoModel> photos;
-    private int coverImage;
+    private PhotoModel coverImage;
     private int views;
 
     public GalleryModel() {
@@ -109,11 +109,11 @@ public class GalleryModel {
         this.photos = photos;
     }
 
-    public int getCoverImage() {
+    public PhotoModel getCoverImage() {
         return coverImage;
     }
 
-    public void setCoverImage(int coverImage) {
+    public void setCoverImage(PhotoModel coverImage) {
         this.coverImage = coverImage;
     }
 

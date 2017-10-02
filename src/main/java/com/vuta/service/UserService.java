@@ -52,14 +52,15 @@ public class UserService {
         return this.controller.getById(userId);
     }
 
-    @RolesAllowed("USER")
+    @PermitAll
     @POST
     @Path("/test")
     public Response test(@Context Claims claims,
                          @HeaderParam("Authorization") String authorization,
                          UserModel user) {
         controller.setJwtClaims(claims);
-        return Response.ok(new ResponseMessage("OK")).build();
+        UserModel usr = new UserModel();
+        return Response.ok(usr).build();
     }
 
 

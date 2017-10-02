@@ -227,9 +227,9 @@ public class UserDao {
         user.setCreatedAt(rs.getTimestamp("createdAt").getTime());
         if (rs.getTimestamp("lastActivity") != null)
             user.setLastActivity(rs.getTimestamp("lastActivity").getTime());
-        user.setEnabled(rs.getBoolean("isEnabled"));
-
-        user.setAvatar(rs.getInt("avatar"));
+        user.setIsEnabled(rs.getBoolean("isEnabled"));
+        if(rs.getInt("avatar") != 0)
+            user.setAvatar(new PhotoDao().getById(rs.getInt("avatar")));
         user.setRole(rs.getInt("role"));
 
     }
@@ -244,8 +244,9 @@ public class UserDao {
             ps.setString(3, user.getEmail());
             ps.setString(4, user.getUserName());
             ps.setString(5, user.getPassword());
-            ps.setBoolean(6, user.isEnabled());
-            ps.setInt(7, user.getAvatar());
+            ps.setBoolean(6, user.getIsEnabled());
+            if(user.getAvatar() != null)
+                ps.setInt(7, user.getAvatar().getId());
             ps.setInt(8, user.getRole());
         } catch (SQLException e) {
             e.printStackTrace();

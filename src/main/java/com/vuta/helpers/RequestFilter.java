@@ -45,7 +45,7 @@ public class RequestFilter implements ContainerRequestFilter {
         if (!method.isAnnotationPresent(PermitAll.class)) {
             // Access denied for all
             if (method.isAnnotationPresent(DenyAll.class)) {
-                return ACCESS_FORBIDDEN;
+                requestContext.abortWith(ACCESS_FORBIDDEN);
                 return;
             }
 

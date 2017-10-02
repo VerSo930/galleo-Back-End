@@ -1,10 +1,12 @@
 package com.vuta.model;
 
 
+import java.io.Serializable;
+
 /**
  * Created by verso_dxr17un on 9/23/2017.
  */
-public class UserModel {
+public class UserModel implements Serializable {
 
     private int id;
     private String name;
@@ -15,8 +17,9 @@ public class UserModel {
     private long createdAt;
     private long lastActivity;
     private boolean isEnabled;
-    private int avatar;
+    private PhotoModel avatar;
     private int role;
+
 
     public UserModel() {
         this.name = "";
@@ -27,28 +30,14 @@ public class UserModel {
         this.createdAt = 0;
         this.lastActivity = 0;
         this.isEnabled = true;
-        this.avatar = 0;
+        this.avatar = null;
         this.role = 0;
-    }
-
-    public UserModel(int id, String name, String lastName, String email, String userName, String password, long createdAt, long lastActivity, boolean enabled, int avatar, int role) {
-        this.id = id;
-        this.name = name;
-        this.lastName = lastName;
-        this.email = email;
-        this.userName = userName;
-        this.password = password;
-        this.createdAt = createdAt;
-        this.lastActivity = lastActivity;
-        this.isEnabled = enabled;
-        this.avatar = avatar;
-        this.role = role;
     }
 
     @Override
     public String toString() {
         return "UserModel{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
@@ -56,7 +45,7 @@ public class UserModel {
                 ", password='" + password + '\'' +
                 ", createdAt=" + createdAt +
                 ", lastActivity=" + lastActivity +
-                ", enabled=" + isEnabled +
+                ", isEnabled=" + isEnabled +
                 ", avatar=" + avatar +
                 ", role=" + role +
                 '}';
@@ -126,19 +115,19 @@ public class UserModel {
         this.lastActivity = lastActivity;
     }
 
-    public boolean isEnabled() {
+    public boolean getIsEnabled() {
         return isEnabled;
     }
 
-    public void setEnabled(boolean enabled) {
-        this.isEnabled = enabled;
+    public void setIsEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
-    public int getAvatar() {
+    public PhotoModel getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(int avatar) {
+    public void setAvatar(PhotoModel avatar) {
         this.avatar = avatar;
     }
 

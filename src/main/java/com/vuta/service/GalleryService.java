@@ -22,8 +22,9 @@ public class GalleryService {
     @Path("/")
     @GET
     @PermitAll
-    public Response getAllGallery() {
-        return controller.getAll();
+    public Response getAllGallery(@HeaderParam("X-Pagination-Page") int page,
+                                  @HeaderParam("X-Pagination-Limit") int limit) {
+        return controller.getAll(page, limit);
     }
 
     @Path("/{id}")
@@ -36,8 +37,10 @@ public class GalleryService {
     @Path("/user/{id}")
     @GET
     @PermitAll
-    public Response getGalleryByUserId(@PathParam("id") int id) {
-        return controller.getByUserId(id);
+    public Response getGalleryByUserId(@PathParam("id") int id,
+                                       @HeaderParam("X-Pagination-Page") int page,
+                                       @HeaderParam("X-Pagination-Limit") int limit) {
+        return controller.getByUserId(id, page, limit);
     }
 
     @RolesAllowed({"ADMIN", "USER"})

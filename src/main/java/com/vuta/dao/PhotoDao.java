@@ -6,6 +6,8 @@ import com.vuta.model.PhotoModel;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by vuta on 25/09/2017.
@@ -47,11 +49,14 @@ public class PhotoDao {
      * @return an {@code ArrayList} of type PhotoModel
      * @throws Exception if something goes wrong with Mysql Query
      */
-    public ArrayList<PhotoModel> getAll() throws Exception {
+    public ArrayList<PhotoModel> getAll(int limit, int offset) throws Exception {
 
         try {
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM Photos");
+            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Photos)" +
+                    " AS total FROM Photos LIMIT ? OFFSET ?");
+            ps.setInt(1, limit);
+            ps.setInt(1, offset);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
             int i = 0;
@@ -107,15 +112,24 @@ public class PhotoDao {
     /**
      * Get photos with specified galleryId
      * @param galleryId the {@code int} of gallery
-     * @return a list {@code ArrayList<PhotoModel>} with all photos
+     * @return a map {@code Hasmap<PhotoModel>} with all photos and count
      * that have specified gallery id, if there are no photos return an empty ArrayList
      * @throws Exception
      */
-    public ArrayList<PhotoModel> getByGalleryId(int galleryId) throws Exception {
+    public ArrayList<PhotoModel> getByGalleryId(int galleryId, int limit, int offset) throws Exception {
+
+        int count = 0;
+        Map<Integer, Object> map = new HashMap<>();
+
         try {
+
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM Photos WHERE galleryId=?");
+            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Photos where galleryId = ?)" +
+                    " AS total FROM Photos p WHERE p.galleryId = ? LIMIT ? OFFSET ?");
             ps.setInt(1,galleryId);
+            ps.setInt(2,galleryId);
+            ps.setInt(2,limit);
+            ps.setInt(2,offset);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
             // loop trough result set,

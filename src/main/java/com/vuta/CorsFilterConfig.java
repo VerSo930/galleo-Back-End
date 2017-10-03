@@ -25,10 +25,12 @@ public class CorsFilterConfig implements ContainerResponseFilter {
             cres.getHeaders().add("Access-Control-Allow-Origin", "*");
         }
         if(cres.getHeaders().get("access-control-expose-headers") == null) {
-            cres.getHeaders().add("access-control-expose-headers", "Origin, Content-Type, Accept, Authorization");
+            cres.getHeaders().add("access-control-expose-headers", "Origin, Content-Type, Accept, Authorization, " +
+                    "X-Pagination-Count, X-Pagination-Page, X-Pagination-Limit");
         }
         if(cres.getHeaders().get("Access-Control-Allow-Headers") == null) {
-            cres.getHeaders().add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+            cres.getHeaders().add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, " +
+                    "Authorization, X-Pagination-Count, X-Pagination-Page, X-Pagination-Limit");
         }
         if(cres.getHeaders().get("Access-Control-Allow-Credentials") == null) {
             cres.getHeaders().add("Access-Control-Allow-Credentials", "true");
@@ -39,9 +41,7 @@ public class CorsFilterConfig implements ContainerResponseFilter {
         if(cres.getHeaders().get("Access-Control-Max-Age") == null) {
             cres.getHeaders().add("Access-Control-Max-Age", "1209600");
         }
-        if(cres.getHeaders().get("Access-Control-Max-Age") == null) {
-            cres.getHeaders().add("Access-Control-Max-Age", "1209600");
-        }
+
 
     }
 

@@ -6,6 +6,8 @@ import com.vuta.model.ResponseMessage;
 import com.vuta.model.GalleryModel;
 
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by verso_dxr17un on 9/23/2017.
@@ -16,22 +18,34 @@ public class GalleryController {
     private Response.ResponseBuilder rb;
     private GalleryDao dao;
 
-    public GalleryController()  {
+    public GalleryController() {
 
     }
 
-    public Response getAll() {
+    public Response getAll(int page, int limit) {
         try {
-            this.dao = new GalleryDao();
-            this.rb = Response.ok(dao.getAll());
-            this.rb.status(200);
-            return rb.build();
-        } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(500);
-            return rb.build();
-        }
+            int offset;
 
+            if (limit == 0 || page == 0)
+                throw new Exception("You must provide pagination data");
+            if (page == 1) {
+                offset = 0;
+            } else {
+                offset = (page - 1) * limit;
+            }
+            this.dao = new GalleryDao();
+            Map<Integer, Object> galleryData = dao.getAll(limit, offset);
+            return Response.ok(galleryData.get(1))
+                    .header("X-Pagination-Count", galleryData.get(2))
+                    .header("X-Pagination-Limit", limit)
+                    .header("X-Pagination-Page", page)
+                    .status(200)
+                    .build();
+        } catch (Exception e) {
+            return Response.ok(new ResponseMessage(e.getMessage()))
+                    .status(500)
+                    .build();
+        }
     }
 
     public Response insert(GalleryModel gallery) {
@@ -50,67 +64,91 @@ public class GalleryController {
         return this.rb.build();
     }
 
-    /** Get all gallery's of a specific User.
-     * This is done by providing a valid user id */
-    public Response getByUserId(int userId) {
+    /**
+     * Get all gallery's of a specific User.
+     * This is done by providing a valid user id
+     */
+    public Response getByUserId(int userId, int page, int limit) {
         try {
             this.dao = new GalleryDao();
-            if(userId == 0)
-                throw new Exception("You must provide a user id");
-            this.rb = Response.ok(dao.getByUserId(userId));
-            this.rb.status(200);
+
+            int offset;
+            if (userId < 1 || limit < 1 || page < 1)
+                throw new Exception("You must provide a user id and pagination data");
+            if (page == 1) {
+                offset = 0;
+            } else {
+                offset = (page - 1) * limit;
+            }
+            Map<Integer, Object> galleryData = dao.getByUserId(userId, limit, offset);
+            return Response.ok()
+                    .header("X-Pagination-Count", galleryData.get(2))
+                    .header("X-Pagination-Limit", limit)
+                    .header("X-Pagination-Page", page)
+                    .status(200)
+                    .build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
             e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage()))
+                    .status(400)
+                    .build();
         }
-        return this.rb.build();
     }
 
     public Response getById(int galleryId) {
         try {
             this.dao = new GalleryDao();
-            if(galleryId == 0)
+            if (galleryId == 0)
                 throw new Exception("You must provide a gallery id");
-            this.rb = Response.ok(dao.getById(galleryId));
-            this.rb.status(200);
+            return Response.ok(dao.getById(galleryId))
+                    .status(200)
+                    .build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
             e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage()))
+                    .status(400)
+                    .build();
         }
-        return this.rb.build();
+
     }
 
     public Response delete(int galleryId) {
         try {
             this.dao = new GalleryDao();
-            if(galleryId == 0)
+            if (galleryId == 0)
                 throw new Exception("You must provide a gallery id");
-            dao.delete(galleryId);
-            this.rb = Response.ok();
-            this.rb.status(200);
+            if (dao.delete(galleryId) == 0)
+                return Response.ok(new ResponseMessage("Gallery don't exist"))
+                        .status(204)
+                        .build();
+            return Response.ok(new ResponseMessage("Gallery"))
+                    .status(200)
+                    .build();
+
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
             e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage()))
+                    .status(400)
+                    .build();
         }
-        return this.rb.build();
+
     }
 
     public Response update(GalleryModel gallery) {
         try {
             this.dao = new GalleryDao();
-            if(!GalleryTools.checkInsert(gallery))
+            if (!GalleryTools.checkInsert(gallery))
                 throw new Exception("You must provide a gallery id");
             dao.update(gallery);
-            this.rb = Response.ok();
-            this.rb.status(200);
+            return Response.ok()
+                    .status(200)
+                    .build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
             e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage()))
+                    .status(400)
+                    .build();
         }
-        return this.rb.build();
     }
+
 }

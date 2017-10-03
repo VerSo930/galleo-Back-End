@@ -2,11 +2,12 @@ package com.vuta.dao;
 
 import com.vuta.helpers.Database;
 import com.vuta.model.GalleryModel;
-import com.vuta.model.UserModel;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by verso_dxr17un on 9/23/2017.
@@ -24,13 +25,18 @@ public class GalleryDao {
         connection = Database.getConnection();
     }
 
-    public ArrayList<GalleryModel> getAll() throws Exception {
+    public Map<Integer, Object> getAll(int limit, int offset) throws Exception {
 
         GalleryModel galleryModel;
+        Map<Integer, Object> map = new HashMap<>();
+        long count = 0;
 
         try {
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM Gallery");
+            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Gallery)" +
+                    " AS total FROM Gallery LIMIT ? OFFSET ?");
+            ps.setInt(1, limit);
+            ps.setInt(2, offset);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
             // loop trough result set,
@@ -41,7 +47,11 @@ public class GalleryDao {
                 if(rs.getInt(8) != 0)
                     galleryModel.setCoverImage(new PhotoDao().getById(rs.getInt(8)));
                 galleryList.add(galleryModel);
+                count = (long) rs.getObject("total");
+
             }
+            map.put(1, galleryList);
+            map.put(2, count);
             // close prepared statement
             ps.close();
         } catch (Exception e) {
@@ -52,7 +62,7 @@ public class GalleryDao {
             Database.close(connection);
         }
 
-        return galleryList;
+        return map;
     }
 
     public GalleryModel insert(GalleryModel gallery) throws Exception {
@@ -87,7 +97,6 @@ public class GalleryDao {
         return gallery;
     }
 
-
     public GalleryModel getById(int galleryId) throws Exception {
         try {
             // prepare  statement
@@ -114,12 +123,20 @@ public class GalleryDao {
         return gallery;
     }
 
-    public ArrayList<GalleryModel> getByUserId(int userId) throws Exception {
+    public Map<Integer, Object> getByUserId(int userId, int limit, int offset) throws Exception {
+
         GalleryModel galleryModel;
+        Map<Integer, Object> map = new HashMap<>();
+        long count = 0;
+
         try {
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM Gallery WHERE userId=?");
+            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Gallery where userId = ?)" +
+            " AS total FROM Gallery g WHERE g.userId = ? LIMIT ? OFFSET ?");
             ps.setInt(1, userId);
+            ps.setInt(2, userId);
+            ps.setInt(3, limit);
+            ps.setInt(4, offset);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
             // loop trough result set,
@@ -128,7 +145,10 @@ public class GalleryDao {
                 galleryModel = mapGallery(rs);
                 galleryModel.setPhotos(new PhotoDao().getByGalleryId(galleryModel.getId()));
                 galleryList.add(galleryModel);
+                count = (long) rs.getObject("total");
             }
+            map.put(1, galleryList);
+            map.put(2, count);
             // close prepared statement
             ps.close();
         } catch (Exception e) {
@@ -138,10 +158,11 @@ public class GalleryDao {
             // put back connection in tomcat pool
             Database.close(connection);
         }
-        return galleryList;
+        return map;
     }
 
-    public void delete(int galleryId) throws Exception {
+    public int delete(int galleryId) throws Exception {
+        int count;
         try {
             // prepare  statement
             ps = connection.prepareStatement("DELETE FROM Gallery WHERE id=?", Statement.RETURN_GENERATED_KEYS);
@@ -150,10 +171,8 @@ public class GalleryDao {
             ps.setInt(1, galleryId);
 
             // execute query and get the result set
-            int count = ps.executeUpdate();
-            if(count == 0){
-                throw new Exception("The gallery that you try to delete don't exist");
-            }
+            count = ps.executeUpdate();
+
             // close prepared statement
             ps.close();
         } catch (Exception e) {
@@ -163,6 +182,7 @@ public class GalleryDao {
             // put back connection in tomcat pool
             Database.close(connection);
         }
+        return count;
     }
 
     public void update(GalleryModel gallery) throws Exception {
@@ -182,7 +202,7 @@ public class GalleryDao {
             // execute query and get the result set
             int count = ps.executeUpdate();
             if(count == 0){
-                throw new Exception("Gallery not deleted");
+                throw new Exception("Gallery not updated");
             }
             // close prepared statement
             ps.close();
@@ -193,6 +213,39 @@ public class GalleryDao {
             // put back connection in tomcat pool
             Database.close(connection);
         }
+    }
+
+    private int count(int userId) throws Exception {
+        int count;
+        try {
+            // prepare  statement
+            StringBuilder sql = new StringBuilder().append("SELECT count(*) FROM Gallery");
+            if (userId != 0) {
+                sql.append(" WHERE userId=?");
+            }
+            ps = connection.prepareStatement("SELECT count(*) FROM Gallery", Statement.RETURN_GENERATED_KEYS);
+
+            if (userId != 0) {
+              ps.setInt(1, userId);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            } else {
+                throw new Exception("Database error");
+            }
+            // close prepared statement
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+        } finally {
+            // put back connection in tomcat pool
+            Database.close(connection);
+        }
+        return count;
+
     }
 
     private GalleryModel mapGallery(ResultSet rs) throws Exception {

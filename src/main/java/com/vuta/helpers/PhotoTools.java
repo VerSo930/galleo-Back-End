@@ -4,14 +4,14 @@ import com.google.common.base.Strings;
 
 import com.vuta.model.PhotoModel;
 import org.apache.commons.io.IOUtils;
+import org.imgscalr.Scalr;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
+import javax.imageio.ImageIO;
 import javax.ws.rs.core.MultivaluedMap;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +49,7 @@ public class PhotoTools {
 
                 String[] name = filename.split("=");
                 String[] extension = name[1].trim().replaceAll("\"", "").split("\\.");
-               // System.out.println(extension[1]);
+                // System.out.println(extension[1]);
                 return extension[1].trim();
             }
         }
@@ -59,14 +59,14 @@ public class PhotoTools {
     /**
      * Generate unique id
      */
-    public static String generateUniqueId() {
+    private static String generateUniqueId() {
         return UUID.randomUUID().toString();
     }
 
     /**
      * Write file to upload directory
      */
-    public static void writeFile(byte[] content, String filename) throws IOException {
+    private static void writeFile(byte[] content, String filename) throws IOException {
 
         File file = new File(filename);
 
@@ -95,21 +95,40 @@ public class PhotoTools {
         // loop trough forms parts
         for (InputPart inputPart : inputParts) {
 
-                // generate unique id
-                String id = generateUniqueId();
+            // generate unique id
+            String id = generateUniqueId();
 
-                // get headers map
-                MultivaluedMap<String, String> header = inputPart.getHeaders();
+            // get headers map
+            MultivaluedMap<String, String> header = inputPart.getHeaders();
 
-                // convert the uploaded file to input stream
-                InputStream inputStream = inputPart.getBody(InputStream.class, null);
+            // convert the uploaded file to input stream
+            final InputStream inputStream = inputPart.getBody(InputStream.class, null);
 
-                // write file to server
-                writeFile(IOUtils.toByteArray(inputStream),  servletPath  + id + "." + getFileExtension(header));
+            // write file to server: original format
+            writeFile(IOUtils.toByteArray(inputStream), servletPath + id + "." + getFileExtension(header));
+
+            // prepare BAOS
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+            // get image buffer from form input part
+            BufferedImage srcImage = ImageIO.read(inputPart.getBody(InputStream.class, null));
+
+            // resize and write image to server: 600 px
+            ImageIO.write(Scalr.resize(srcImage, 600), getFileExtension(header), os);
+            writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), servletPath + id + "-600." + getFileExtension(header));
+            os.flush();
+            os.close();
+
+            // resize and write image to server: 1200 px
+            os = new ByteArrayOutputStream();
+            ImageIO.write(Scalr.resize(srcImage, 1200), getFileExtension(header), os);
+            writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), servletPath + id + "-1200." + getFileExtension(header));
+            os.flush();
+            os.close();
+
             files.add(id + "." + getFileExtension(header));
         }
 
         return files;
     }
-
 }

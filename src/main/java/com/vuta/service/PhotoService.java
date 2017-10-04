@@ -36,8 +36,9 @@ public class PhotoService {
     @PermitAll
     @Path("/")
     @GET
-    public Response getAllPhotos() {
-        return controller.getAll();
+    public Response getAllPhotos(@HeaderParam("X-Pagination-Page") int page,
+                                 @HeaderParam("X-Pagination-Limit") int limit) {
+        return controller.getAll(page, limit);
     }
 
     @PermitAll
@@ -50,8 +51,10 @@ public class PhotoService {
     @PermitAll
     @Path("/gallery/{id}")
     @GET
-    public Response getPhotoByGalleryId(@PathParam("id") int galleryId) {
-        return controller.getByGalleryId(galleryId);
+    public Response getPhotoByGalleryId(@PathParam("id") int galleryId,
+                                        @HeaderParam("X-Pagination-Page") int page,
+                                        @HeaderParam("X-Pagination-Limit") int limit) {
+        return controller.getByGalleryId(galleryId, page, limit);
     }
 
     @PermitAll
@@ -79,22 +82,22 @@ public class PhotoService {
     @Path("/upload")
     @Consumes("multipart/form-data")
     @Produces(Constants.CONTENT_TYPE)
-    @RolesAllowed({ "USER", "ADMIN" })
+    @RolesAllowed({"USER", "ADMIN"})
     public Response uploadFile(MultipartFormDataInput input) {
         System.out.println(servletContext.getRealPath("/WEB-INF"));
-        return controller.upload(input, servletContext.getRealPath("/WEB-INF/"+ Constants.PHOTO_UPLOAD_PATH));
+        return controller.upload(input, servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH));
     }
 
     @PermitAll
     @Path("/resource/{id}")
     @GET
-   // @Consumes(Constants.CONTENT_TYPE)
+    // @Consumes(Constants.CONTENT_TYPE)
     @Produces({"image/jpeg", "image/gif"})
     public Response getPhoto(@PathParam("id") String id) {
 
-            File image = new File(servletContext.getRealPath("/WEB-INF/"+ Constants.PHOTO_UPLOAD_PATH + id));
-            return Response.ok(image)
-                    .status(200).build();
+        File image = new File(servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH + id));
+        return Response.ok(image)
+                .status(200).build();
 
 
     }

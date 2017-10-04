@@ -49,14 +49,15 @@ public class PhotoDao {
      * @return an {@code ArrayList} of type PhotoModel
      * @throws Exception if something goes wrong with Mysql Query
      */
-    public ArrayList<PhotoModel> getAll(int limit, int offset) throws Exception {
-
+    public Map<Integer, Object> getAll(int limit, int offset) throws Exception {
+        Map<Integer, Object> map = new HashMap<>();
+        long count = 0;
         try {
             // prepare  statement
             ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Photos)" +
                     " AS total FROM Photos LIMIT ? OFFSET ?");
             ps.setInt(1, limit);
-            ps.setInt(1, offset);
+            ps.setInt(2, offset);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
             int i = 0;
@@ -64,7 +65,10 @@ public class PhotoDao {
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
                 photoList.add(mapRsToPhoto(rs));
+                count = (long) rs.getObject("total");
             }
+            map.put(1, photoList);
+            map.put(2, count);
             // close prepared statement
             ps.close();
         } catch (Exception e) {
@@ -75,7 +79,7 @@ public class PhotoDao {
             Database.close(connection);
         }
 
-        return photoList;
+        return map;
     }
 
     /**
@@ -128,8 +132,8 @@ public class PhotoDao {
                     " AS total FROM Photos p WHERE p.galleryId = ? LIMIT ? OFFSET ?");
             ps.setInt(1,galleryId);
             ps.setInt(2,galleryId);
-            ps.setInt(2,limit);
-            ps.setInt(2,offset);
+            ps.setInt(3,limit);
+            ps.setInt(4,offset);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
             // loop trough result set,

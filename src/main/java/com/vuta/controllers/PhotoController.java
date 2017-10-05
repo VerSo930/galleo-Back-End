@@ -109,9 +109,17 @@ public class PhotoController {
                 offset = (page - 1) * limit;
             }
             this.dao = new PhotoDao();
+            Map<Integer, Object> photoData = dao.getAll(limit, offset);
+
             if (galleryId == 0)
                 throw new Exception("You must provide a Gallery id");
-            return Response.ok(dao.getByGalleryId(galleryId, limit, offset)).status(200).build();
+           // return Response.ok(dao.getByGalleryId(galleryId, limit, offset)).status(200).build();
+            return Response.ok(photoData.get(1))
+                    .header("X-Pagination-Count", photoData.get(2))
+                    .header("X-Pagination-Limit", limit)
+                    .header("X-Pagination-Page", page)
+                    .status(200)
+                    .build();
 
         } catch (Exception e) {
             return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();

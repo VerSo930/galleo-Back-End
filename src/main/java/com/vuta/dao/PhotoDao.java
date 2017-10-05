@@ -120,7 +120,7 @@ public class PhotoDao {
      * that have specified gallery id, if there are no photos return an empty ArrayList
      * @throws Exception
      */
-    public ArrayList<PhotoModel> getByGalleryId(int galleryId, int limit, int offset) throws Exception {
+    public Map<Integer, Object> getByGalleryId(int galleryId, int limit, int offset) throws Exception {
 
         int count = 0;
         Map<Integer, Object> map = new HashMap<>();
@@ -140,7 +140,10 @@ public class PhotoDao {
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
                 this.photoList.add(mapRsToPhoto(rs));
+                count = (int) rs.getObject("total");
             }
+            map.put(1, photoList);
+            map.put(2, count);
             // close prepared statement
             ps.close();
         } catch (Exception e) {
@@ -151,7 +154,7 @@ public class PhotoDao {
             Database.close(connection);
         }
 
-        return photoList;
+        return map;
     }
 
     /**

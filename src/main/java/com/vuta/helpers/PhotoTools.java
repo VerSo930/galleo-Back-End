@@ -115,14 +115,14 @@ public class PhotoTools {
 
             // resize and write image to server: 600 px
             ImageIO.write(Scalr.resize(srcImage, 600), getFileExtension(header), os);
-            writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), servletPath + id + "-600." + getFileExtension(header));
+            writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), servletPath + "600-" + id + "." + getFileExtension(header));
             os.flush();
             os.close();
 
             // resize and write image to server: 1200 px
             os = new ByteArrayOutputStream();
             ImageIO.write(Scalr.resize(srcImage, 1200), getFileExtension(header), os);
-            writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), servletPath + id + "-1200." + getFileExtension(header));
+            writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), servletPath + "1200-" +  id + "." + getFileExtension(header));
             os.flush();
             os.close();
 

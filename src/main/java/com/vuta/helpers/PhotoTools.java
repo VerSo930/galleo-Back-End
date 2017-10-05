@@ -82,8 +82,16 @@ public class PhotoTools {
 
     }
 
+    public static PhotoModel mapPhoto(MultipartFormDataInput input) throws IOException {
+        PhotoModel photo = new PhotoModel();
+        photo.setName(input.getFormDataPart("name", String.class, null));
+        photo.setDescription(input.getFormDataPart("description", String.class, null));
+        photo.setPrivate(input.getFormDataPart("private", Boolean.class, null));
+        return photo;
+    }
+
     /**
-     * Upload files
+     * Photo work
      */
     public static List<String> uploadPhoto(MultipartFormDataInput input, String servletPath) throws Exception {
 
@@ -91,10 +99,10 @@ public class PhotoTools {
         List<String> files = new ArrayList<>();
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
         List<InputPart> inputParts = uploadForm.get("image");
-
+        final String name = input.getFormDataPart("name", String.class, null);
+        System.out.println(name);
         // loop trough forms parts
         for (InputPart inputPart : inputParts) {
-
             // generate unique id
             String id = generateUniqueId();
 
@@ -103,6 +111,7 @@ public class PhotoTools {
 
             // convert the uploaded file to input stream
             final InputStream inputStream = inputPart.getBody(InputStream.class, null);
+
 
             // write file to server: original format
             writeFile(IOUtils.toByteArray(inputStream), servletPath + id + "." + getFileExtension(header));

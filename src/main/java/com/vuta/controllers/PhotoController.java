@@ -168,6 +168,8 @@ public class PhotoController {
     public Response upload(MultipartFormDataInput input, String servletPath) {
 
         try {
+            PhotoModel photo = PhotoTools.mapPhoto(input);
+            System.out.println(photo.toString());
             this.rb = Response.ok(PhotoTools.uploadPhoto(input, servletPath));
             this.rb.status(200);
         } catch (Exception e) {
@@ -175,6 +177,7 @@ public class PhotoController {
             this.rb = Response.ok(e.getMessage());
             this.rb.status(400);
         }
+
         return this.rb.build();
     }
 

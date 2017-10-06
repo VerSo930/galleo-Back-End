@@ -60,8 +60,9 @@ public class PhotoService {
     @PermitAll
     @Path("/")
     @POST
-    public Response insertPhoto(PhotoModel photo) {
-        return controller.insert(photo);
+    @Consumes("multipart/form-data")
+    public Response insertPhoto(MultipartFormDataInput input) {
+        return controller.insert(input, servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH));
     }
 
     @RolesAllowed({"ADMIN", "USER"})
@@ -77,16 +78,16 @@ public class PhotoService {
     public Response updatePhoto(PhotoModel photo) {
         return controller.update(photo);
     }
-
-    @POST
-    @Path("/upload")
-    @Consumes("multipart/form-data")
-    @Produces(Constants.CONTENT_TYPE)
-    @RolesAllowed({"USER", "ADMIN"})
-    public Response uploadFile(MultipartFormDataInput input) {
-        System.out.println(servletContext.getRealPath("/WEB-INF"));
-        return controller.upload(input, servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH));
-    }
+//
+//    @POST
+//    @Path("/upload")
+//    @Consumes("multipart/form-data")
+//    @Produces(Constants.CONTENT_TYPE)
+//    @RolesAllowed({"USER", "ADMIN"})
+//    public Response uploadFile() {
+//        System.out.println(servletContext.getRealPath("/WEB-INF"));
+//        return controller.upload(input));
+//    }
 
     @PermitAll
     @Path("/resource/{id}")

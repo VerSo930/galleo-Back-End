@@ -31,7 +31,8 @@ public class PhotoTools {
 
         if (Strings.isNullOrEmpty(photo.getName()) ||
                 Strings.isNullOrEmpty(photo.getDescription()) ||
-                Strings.isNullOrEmpty(photo.getUrl())) {
+                Strings.isNullOrEmpty(photo.getUrl()) ||
+                photo.getUserId() == 0 || photo.getGalleryId() == 0) {
             return false;
         }
         return true;
@@ -83,7 +84,21 @@ public class PhotoTools {
     }
 
     /**
-     * Upload files
+     * Map input fields to PhotoModel Object
+     */
+    public static PhotoModel mapFormToPhoto(MultipartFormDataInput input) throws IOException {
+        PhotoModel photo = new PhotoModel();
+        photo.setName(input.getFormDataPart("name", String.class, null));
+        photo.setDescription(input.getFormDataPart("description", String.class, null));
+        photo.setGalleryId(input.getFormDataPart("galleryId", Integer.class, null));
+        photo.setUserId(input.getFormDataPart("userId", Integer.class, null));
+        photo.setPrivate(input.getFormDataPart("isPrivate", Boolean.class, null));
+
+        return photo;
+    }
+
+    /**
+     * Manipulate image file
      */
     public static List<String> uploadPhoto(MultipartFormDataInput input, String servletPath) throws Exception {
 

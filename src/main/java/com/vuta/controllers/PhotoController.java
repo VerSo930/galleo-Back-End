@@ -14,6 +14,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.vuta.helpers.PhotoTools.mapFormToPhoto;
+
 /**
  * Created by vuta on 25/09/2017.
  */
@@ -56,20 +58,22 @@ public class PhotoController {
 
     }
 
-    public Response insert(PhotoModel photo) {
+    public Response insert(MultipartFormDataInput input, String servletPath) {
         try {
+
             this.dao = new PhotoDao();
+            PhotoModel photo = PhotoTools.mapFormToPhoto(input);
+            photo.setUrl(PhotoTools.uploadPhoto(input, servletPath).get(0));
+
+            this.dao.insert(photo);
             if (!PhotoTools.checkInsert(photo))
                 return Response.ok(new ResponseMessage("You must provide all photo details")).status(400).build();
-            this.rb = Response.ok(this.dao.insert(photo));
-            this.rb.status(200);
 
+           return Response.ok(photo).status(200).build();
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
             e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
         }
-        return this.rb.build();
     }
 
     /**

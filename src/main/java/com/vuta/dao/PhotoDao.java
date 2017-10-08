@@ -25,7 +25,7 @@ public class PhotoDao {
     /**
      * Database Connection
      */
-    private static Connection connection;
+    private Connection connection;
     /**
      * Prepared statement
      */
@@ -235,6 +235,7 @@ public class PhotoDao {
         int count;
         try {
             // prepare  statement
+            connection = Database.getConnection();
             ps = connection.prepareStatement("DELETE FROM Photos WHERE id=?", Statement.RETURN_GENERATED_KEYS);
 
             // map id to Prepared Statement
@@ -254,9 +255,20 @@ public class PhotoDao {
         return count != 0;
     }
 
+    public void incrementHits(int photoId) throws Exception {
+        connection = Database.getConnection();
+        ps = connection.prepareStatement("UPDATE Photos SET views=views+1 WHERE id =?", Statement.RETURN_GENERATED_KEYS);
+        ps.setInt(1, photoId);
+        ps.executeUpdate();
+        ps.close();
+
+        Database.close(connection);
+    }
+
     public boolean update(PhotoModel photo) throws Exception {
         int count;
         try {
+            connection = Database.getConnection();
             // prepare  statement
             ps = connection.prepareStatement("UPDATE Photos SET galleryId=?, name=?, description=?, updatedAt=?, isPrivate=?, url=?," +
                     "views=?  WHERE id=?", Statement.RETURN_GENERATED_KEYS);
@@ -269,6 +281,7 @@ public class PhotoDao {
             ps.setBoolean(5, photo.getIsPrivate());
             ps.setString(6, photo.getUrl());
             ps.setInt(7, photo.getViews());
+            ps.setInt(8, photo.getId());
 
             // execute query and get the result set
             count = ps.executeUpdate();

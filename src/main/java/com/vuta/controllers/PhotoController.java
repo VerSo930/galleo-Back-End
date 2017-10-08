@@ -63,11 +63,15 @@ public class PhotoController {
 
             this.dao = new PhotoDao();
             PhotoModel photo = PhotoTools.mapFormToPhoto(input);
-            photo.setUrl(PhotoTools.uploadPhoto(input, servletPath).get(0));
 
-            this.dao.insert(photo);
             if (!PhotoTools.checkInsert(photo))
                 return Response.ok(new ResponseMessage("You must provide all photo details")).status(400).build();
+
+            photo.setUrl("");
+            this.dao.insert(photo);
+            PhotoTools.uploadPhoto(input, servletPath, photo);
+            if(!this.dao.update(photo))
+                throw new Exception("Failed to set image URL");
 
            return Response.ok(photo).status(200).build();
         } catch (Exception e) {
@@ -164,8 +168,19 @@ public class PhotoController {
         }
     }
 
+    public void incrementViews(int imageId) {
 
-    public Response upload(MultipartFormDataInput input, String servletPath) {
+        try {
+            this.dao = new PhotoDao();
+            this.dao.incrementHits(imageId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    /*public Response upload(MultipartFormDataInput input, String servletPath) {
 
         try {
             PhotoModel photo = PhotoTools.mapPhoto(input);
@@ -179,7 +194,7 @@ public class PhotoController {
         }
 
         return this.rb.build();
-    }
+    }*/
 
 
 }

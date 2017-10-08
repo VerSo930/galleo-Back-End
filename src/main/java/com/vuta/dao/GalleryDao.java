@@ -44,7 +44,7 @@ public class GalleryDao {
             while (rs.next()) {
                 galleryModel = mapGallery(rs);
                 galleryModel.setPhotos(null);
-                if(rs.getInt(8) != 0)
+                if (rs.getInt(8) != 0)
                     galleryModel.setCoverImage(new PhotoDao().getById(rs.getInt(8)));
                 galleryList.add(galleryModel);
                 count = (long) rs.getObject("total");
@@ -76,8 +76,8 @@ public class GalleryDao {
             mapGalleryToPs(gallery);
 
             // execute query and get the result set
-             ps.executeQuery();
-            ResultSet rs =ps.getGeneratedKeys();
+            ps.executeQuery();
+            ResultSet rs = ps.getGeneratedKeys();
 
             // get inserted row id and set to it user object
             while (rs.next()) {
@@ -101,16 +101,22 @@ public class GalleryDao {
         try {
             // prepare  statement
             ps = connection.prepareStatement("SELECT * FROM Gallery WHERE id=?");
-            ps.setInt(1,galleryId);
+            ps.setInt(1, galleryId);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
             // loop trough result set,
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
-               this.gallery = mapGallery(rs);
-               this.gallery.setPhotos(null);
+                this.gallery = mapGallery(rs);
+                this.gallery.setPhotos(null);
             }
             // close prepared statement
+            ps.close();
+
+            ps = connection.prepareStatement("UPDATE Gallery SET views = views+1 WHERE id = ?");
+            ps.setInt(1, galleryId);
+            ps.executeQuery();
+
             ps.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,7 +138,7 @@ public class GalleryDao {
         try {
             // prepare  statement
             ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Gallery where userId = ?)" +
-            " AS total FROM Gallery g WHERE g.userId = ? LIMIT ? OFFSET ?");
+                    " AS total FROM Gallery g WHERE g.userId = ? LIMIT ? OFFSET ?");
             ps.setInt(1, userId);
             ps.setInt(2, userId);
             ps.setInt(3, limit);
@@ -201,7 +207,7 @@ public class GalleryDao {
 
             // execute query and get the result set
             int count = ps.executeUpdate();
-            if(count == 0){
+            if (count == 0) {
                 throw new Exception("Gallery not updated");
             }
             // close prepared statement
@@ -226,7 +232,7 @@ public class GalleryDao {
             ps = connection.prepareStatement("SELECT count(*) FROM Gallery", Statement.RETURN_GENERATED_KEYS);
 
             if (userId != 0) {
-              ps.setInt(1, userId);
+                ps.setInt(1, userId);
             }
 
             ResultSet rs = ps.executeQuery();
@@ -253,15 +259,15 @@ public class GalleryDao {
         GalleryModel gallery = new GalleryModel();
         // Map all query's columns to UserModel
 
-            gallery.setId(rs.getInt("id"));
-            gallery.setUserId(rs.getInt("userId"));
-            gallery.setName(rs.getString("name"));
-            gallery.setDescription(rs.getString("description"));
-            gallery.setCreatedAt(rs.getTimestamp("createdAt").getTime());
-            gallery.setUpdatedAt(rs.getTimestamp("updatedAt").getTime());
-            gallery.setIsPrivate(rs.getBoolean("isPrivate"));
-            //gallery.setCoverImage(rs.getInt("coverImage"));
-            gallery.setViews(rs.getInt("views"));
+        gallery.setId(rs.getInt("id"));
+        gallery.setUserId(rs.getInt("userId"));
+        gallery.setName(rs.getString("name"));
+        gallery.setDescription(rs.getString("description"));
+        gallery.setCreatedAt(rs.getTimestamp("createdAt").getTime());
+        gallery.setUpdatedAt(rs.getTimestamp("updatedAt").getTime());
+        gallery.setIsPrivate(rs.getBoolean("isPrivate"));
+        //gallery.setCoverImage(rs.getInt("coverImage"));
+        gallery.setViews(rs.getInt("views"));
 
         return gallery;
     }

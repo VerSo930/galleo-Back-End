@@ -81,7 +81,7 @@ public class GalleryController {
                 offset = (page - 1) * limit;
             }
             Map<Integer, Object> galleryData = dao.getByUserId(userId, limit, offset);
-            return Response.ok()
+            return Response.ok(galleryData.get(1))
                     .header("X-Pagination-Count", galleryData.get(2))
                     .header("X-Pagination-Limit", limit)
                     .header("X-Pagination-Page", page)

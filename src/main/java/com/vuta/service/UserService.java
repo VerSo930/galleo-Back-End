@@ -45,7 +45,7 @@ public class UserService {
         return this.controller.delete(userId);
     }
 
-    @RolesAllowed({"ADMIN"})
+    @PermitAll
     @GET
     @Path("/{id}")
     public Response getUserById(@PathParam("id") int userId) {

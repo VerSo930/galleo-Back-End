@@ -2,6 +2,7 @@ package com.vuta.helpers;
 
 import com.google.common.base.Strings;
 
+import com.vuta.Constants;
 import com.vuta.model.PhotoModel;
 import org.apache.commons.io.IOUtils;
 import org.imgscalr.Scalr;
@@ -136,7 +137,6 @@ public class PhotoTools {
             BufferedImage srcImage = ImageIO.read(inputPart.getBody(InputStream.class, null));
 
 
-
             // resize and write image to server: 600 px
             ImageIO.write(Scalr.resize(srcImage, 450), getFileExtension(header), os);
             writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), servletPath, userId,
@@ -153,6 +153,30 @@ public class PhotoTools {
             os.close();
 
             photo.setUrl(uniqueId + "." + getFileExtension(header));
+        }
+    }
+
+    public static File getImage(String quality, String servletPath, int userId, String fileName) {
+
+        String imgFormat = "";
+
+        switch (quality) {
+            case "small":
+                imgFormat = "450-";
+                break;
+            case "medium":
+                imgFormat = "1200-";
+                break;
+            case "hd":
+                imgFormat = "";
+        }
+
+        File file = new File(servletPath + "/" + userId + "/" + imgFormat + fileName);
+
+        if (file.exists() && !file.isDirectory()) {
+            return file;
+        } else {
+            return new File(servletPath + "/" + imgFormat + "no-image.jpg");
         }
     }
 }

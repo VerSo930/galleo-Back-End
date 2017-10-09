@@ -40,6 +40,7 @@
             <artifactId>jaxrs-api</artifactId>
             <version>3.0.2.Final</version>
         </dependency>
+
         <dependency>
             <groupId>net.sf.scannotation</groupId>
             <artifactId>scannotation</artifactId>

@@ -90,22 +90,15 @@ public class PhotoService {
 //    }
 
     @PermitAll
-    @Path("/resource/{userId}/{photoId}/{filename}")
+    @Path("/resource/{userId}/{photoId}/{quality}/{filename}")
     @GET
-    // @Consumes(Constants.CONTENT_TYPE)
+    @Consumes("multipart/form-data")
     @Produces({"image/jpeg", "image/gif"})
     public Response getPhoto(@PathParam("userId") int userId,
                              @PathParam("photoId") int photoId,
+                             @PathParam("quality") String quality,
                              @PathParam("filename") String filename) {
 
-        File image = new File(servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH + userId + "/" + filename));
-        String tmpFileName = filename.split("\\.")[0];
-
-        this.controller.incrementViews(photoId);
-
-        return Response.ok(image)
-                .status(200).build();
-
-
+       return this.controller.getImage(userId, photoId, quality, filename, servletContext);
     }
 }

@@ -1,5 +1,6 @@
 package com.vuta.controllers;
 
+import com.vuta.Constants;
 import com.vuta.dao.PhotoDao;
 import com.vuta.helpers.PhotoTools;
 import com.vuta.model.ResponseMessage;
@@ -8,9 +9,11 @@ import org.imgscalr.Scalr;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletContext;
 import javax.ws.rs.core.Response;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -177,6 +180,18 @@ public class PhotoController {
             e.printStackTrace();
         }
 
+    }
+
+    public Response getImage (int userId, int photoId, String quality, String fileName, ServletContext servletContext) {
+
+        incrementViews(photoId);
+
+        return Response.ok(PhotoTools.getImage(quality,
+                servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH),
+                userId,
+                fileName))
+                .status(200)
+                .build();
     }
 
 

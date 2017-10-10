@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
+/** Persistence of all galleries
  * Created by verso_dxr17un on 9/23/2017.
  */
 public class GalleryDao {
@@ -25,6 +25,13 @@ public class GalleryDao {
         connection = Database.getConnection();
     }
 
+    /**
+     * Get all galeries from database
+     * @param limit is the int number that set the limit of results
+     * @param offset is the number that start the query after specified position
+     * @return {@code Map<Integer, Object>} that contain the list galleries and the count of all galleries
+     * @throws Exception
+     */
     public Map<Integer, Object> getAll(int limit, int offset) throws Exception {
 
         GalleryModel galleryModel;
@@ -65,6 +72,12 @@ public class GalleryDao {
         return map;
     }
 
+    /**
+     *
+     * @param gallery object that will be inserted
+     * @return {@code GalleryModel} that contain the provided gallery + generated id
+     * @throws Exception if something goes wrong with MySql
+     */
     public GalleryModel insert(GalleryModel gallery) throws Exception {
 
         try {
@@ -97,6 +110,12 @@ public class GalleryDao {
         return gallery;
     }
 
+    /**
+     *
+     * @param galleryId is the id of requested gallery
+     * @return {@code GalleryModel} that contain all gallery data
+     * @throws Exception if something goes wrong with MySql
+     */
     public GalleryModel getById(int galleryId) throws Exception {
         try {
             // prepare  statement
@@ -129,6 +148,14 @@ public class GalleryDao {
         return gallery;
     }
 
+    /**
+     *
+     * @param userId the id of owner user
+     * @param limit the limit of rows that will be fetched
+     * @param offset the number that start the query after specified position
+     * @return {@code Map<Integer, Object>} that contain the list galleries and the count of all galleries
+     * @throws Exception
+     */
     public Map<Integer, Object> getByUserId(int userId, int limit, int offset) throws Exception {
 
         GalleryModel galleryModel;
@@ -167,6 +194,12 @@ public class GalleryDao {
         return map;
     }
 
+    /**
+     * Delete gallery by id
+     * @param galleryId the id of the gallery
+     * @return {@code int} the number of rows that where affected
+     * @throws Exception
+     */
     public int delete(int galleryId) throws Exception {
         int count;
         try {
@@ -191,7 +224,14 @@ public class GalleryDao {
         return count;
     }
 
-    public void update(GalleryModel gallery) throws Exception {
+    /**
+     * Update Gallery
+     * @param gallery the gallery object that will be inserted
+     * @return {@code int} the number of rows that where affected
+     * @throws Exception
+     */
+    public int update(GalleryModel gallery) throws Exception {
+        int count = 0;
         try {
             // prepare  statement
             ps = connection.prepareStatement("UPDATE Gallery SET name=?, description=?, isPrivate=?, coverImage=?," +
@@ -206,41 +246,8 @@ public class GalleryDao {
             ps.setInt(6, gallery.getId());
 
             // execute query and get the result set
-            int count = ps.executeUpdate();
-            if (count == 0) {
-                throw new Exception("Gallery not updated");
-            }
-            // close prepared statement
-            ps.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception(e.getMessage());
-        } finally {
-            // put back connection in tomcat pool
-            Database.close(connection);
-        }
-    }
+            count = ps.executeUpdate();
 
-    private int count(int userId) throws Exception {
-        int count;
-        try {
-            // prepare  statement
-            StringBuilder sql = new StringBuilder().append("SELECT count(*) FROM Gallery");
-            if (userId != 0) {
-                sql.append(" WHERE userId=?");
-            }
-            ps = connection.prepareStatement("SELECT count(*) FROM Gallery", Statement.RETURN_GENERATED_KEYS);
-
-            if (userId != 0) {
-                ps.setInt(1, userId);
-            }
-
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                count = rs.getInt(1);
-            } else {
-                throw new Exception("Database error");
-            }
             // close prepared statement
             ps.close();
         } catch (Exception e) {
@@ -251,9 +258,14 @@ public class GalleryDao {
             Database.close(connection);
         }
         return count;
-
     }
 
+    /**
+     * Map Reult Set to a {@code GalleryModel} object
+     * @param rs the result set resulted after query execution
+     * @return {@code GalleryModel} the gallery mapped from Result Set
+     * @throws Exception if some fields are null
+     */
     private GalleryModel mapGallery(ResultSet rs) throws Exception {
 
         GalleryModel gallery = new GalleryModel();
@@ -272,6 +284,11 @@ public class GalleryDao {
         return gallery;
     }
 
+    /**
+     * Map Gallery object to Prepared statement
+     * @param gallery the gallery object
+     * @throws Exception if some fields are null
+     */
     private void mapGalleryToPs(GalleryModel gallery) throws Exception {
         try {
             ps.setInt(1, gallery.getUserId());

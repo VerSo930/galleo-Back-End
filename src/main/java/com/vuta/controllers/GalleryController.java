@@ -141,10 +141,17 @@ public class GalleryController {
             this.dao = new GalleryDao();
             if (!GalleryTools.checkInsert(gallery))
                 throw new Exception("You must provide a gallery id");
-            dao.update(gallery);
-            return Response.ok()
-                    .status(200)
-                    .build();
+
+            if(dao.update(gallery) > 0) {
+                return Response.ok()
+                        .status(200)
+                        .build();
+            } else {
+                return Response.ok(new ResponseMessage("The gallery was not updated"))
+                        .status(400)
+                        .build();
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             return Response.ok(new ResponseMessage(e.getMessage()))

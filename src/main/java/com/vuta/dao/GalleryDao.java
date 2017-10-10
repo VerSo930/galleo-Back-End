@@ -279,9 +279,9 @@ public class GalleryDao {
             ps.setString(3, gallery.getDescription());
             ps.setTimestamp(4, new java.sql.Timestamp(new Date(System.currentTimeMillis()).getTime()));
             ps.setBoolean(5, gallery.getIsPrivate());
-            ps.setInt(6, gallery.getCoverImage().getId());
+            ps.setInt(6, (gallery.getCoverImage() == null)? 0 : gallery.getCoverImage().getId());
             ps.setInt(7, gallery.getViews());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new Exception("One or more user properties are not provided");
         }
     }

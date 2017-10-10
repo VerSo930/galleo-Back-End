@@ -53,15 +53,17 @@ public class GalleryController {
             this.dao = new GalleryDao();
             if (!GalleryTools.checkInsert(gallery))
                 return Response.ok(new ResponseMessage("You must provide all user details")).status(400).build();
-            this.rb = Response.ok(this.dao.insert(gallery));
-            this.rb.status(200);
+            return Response.ok(this.dao.insert(gallery))
+                    .status(200)
+                    .build();
 
         } catch (Exception e) {
-            this.rb = Response.ok(new ResponseMessage(e.getMessage()));
-            this.rb.status(400);
             e.printStackTrace();
+            return Response.ok(new ResponseMessage(e.getMessage()))
+                    .status(400)
+                    .build();
         }
-        return this.rb.build();
+
     }
 
     /**

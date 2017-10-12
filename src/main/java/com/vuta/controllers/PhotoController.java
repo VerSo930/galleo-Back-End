@@ -120,7 +120,7 @@ public class PhotoController {
                 offset = (page - 1) * limit;
             }
             this.dao = new PhotoDao();
-            Map<Integer, Object> photoData = dao.getAll(limit, offset);
+            Map<Integer, Object> photoData = dao.getByGalleryId(galleryId, limit, offset);
 
             if (galleryId == 0)
                 throw new Exception("You must provide a Gallery id");

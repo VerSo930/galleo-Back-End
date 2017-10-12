@@ -122,7 +122,7 @@ public class PhotoDao {
      */
     public Map<Integer, Object> getByGalleryId(int galleryId, int limit, int offset) throws Exception {
 
-        int count = 0;
+        long count = 0;
         Map<Integer, Object> map = new HashMap<>();
 
         try {
@@ -140,7 +140,7 @@ public class PhotoDao {
             // map each row to a new user object and add it to user ArrayList
             while (rs.next()) {
                 this.photoList.add(mapRsToPhoto(rs));
-                count = (int) rs.getObject("total");
+                count = (long) rs.getObject("total");
             }
             map.put(1, photoList);
             map.put(2, count);

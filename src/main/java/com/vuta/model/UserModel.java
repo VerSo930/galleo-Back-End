@@ -19,6 +19,8 @@ public class UserModel implements Serializable {
     private boolean isEnabled;
     private PhotoModel avatar;
     private int role;
+    private int photosCount;
+    private int galleriesCount;
 
 
     public UserModel() {
@@ -49,6 +51,22 @@ public class UserModel implements Serializable {
                 ", avatar=" + avatar +
                 ", role=" + role +
                 '}';
+    }
+
+    public int getPhotosCount() {
+        return photosCount;
+    }
+
+    public void setPhotosCount(int photosCount) {
+        this.photosCount = photosCount;
+    }
+
+    public int getGalleriesCount() {
+        return galleriesCount;
+    }
+
+    public void setGalleriesCount(int galleriesCount) {
+        this.galleriesCount = galleriesCount;
     }
 
     public int getId() {

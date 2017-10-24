@@ -156,7 +156,10 @@ public class UserDao {
         try {
             connection = Database.getConnection();
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM User WHERE userName=? AND password=?");
+            ps = connection.prepareStatement("SELECT u1.*, COUNT(DISTINCT p.id) as photosCount, " +
+                    "COUNT(DISTINCT g.id) as galleriesCount FROM User u1 " +
+                    " LEFT JOIN Photos p ON u1.id = p.userId" +
+                    " LEFT JOIN Gallery g ON u1.id = g.userId WHERE userName=? AND password=?");
             ps.setString(1, username);
             ps.setString(2, password);
             // execute query and get the result set
@@ -225,6 +228,8 @@ public class UserDao {
         //user.setPassword(rs.getString("password"));
         user.setUserName(rs.getString("userName"));
         user.setCreatedAt(rs.getTimestamp("createdAt").getTime());
+        user.setPhotosCount(rs.getInt("photosCount"));
+        user.setGalleriesCount(rs.getInt("galleriesCount"));
         if (rs.getTimestamp("lastActivity") != null)
             user.setLastActivity(rs.getTimestamp("lastActivity").getTime());
         user.setIsEnabled(rs.getBoolean("isEnabled"));

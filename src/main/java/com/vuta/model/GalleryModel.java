@@ -17,11 +17,11 @@ public class GalleryModel {
     private String description;
     private long createdAt;
     private long updatedAt;
-    @JsonProperty("test")
     private boolean isPrivate;
     private List<PhotoModel> photos;
     private PhotoModel coverImage;
     private int views;
+    private int photosCount;
 
     public GalleryModel() {
         this.updatedAt = new Date(System.currentTimeMillis()).getTime();
@@ -43,6 +43,22 @@ public class GalleryModel {
                 ", coverImage=" + coverImage +
                 ", views=" + views +
                 '}';
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
+
+    public int getPhotosCount() {
+        return photosCount;
+    }
+
+    public void setPhotosCount(int photosCount) {
+        this.photosCount = photosCount;
     }
 
     public int getId() {

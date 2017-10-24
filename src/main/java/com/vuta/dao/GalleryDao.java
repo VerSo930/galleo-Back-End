@@ -40,8 +40,11 @@ public class GalleryDao {
 
         try {
             // prepare  statement
-            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Gallery)" +
-                    " AS total FROM Gallery LIMIT ? OFFSET ?");
+//            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Gallery)" +
+//                    " AS total FROM Gallery LIMIT ? OFFSET ?");
+
+            ps = connection.prepareStatement("SELECT g.*, COUNT(DISTINCT p.id) as photosCount, (SELECT count(*) FROM Gallery) as total FROM Gallery g" +
+                    "  LEFT JOIN Photos p ON p.galleryId = g.id GROUP BY g.id  ORDER BY g.updatedAt DESC LIMIT ? OFFSET ?");
             ps.setInt(1, limit);
             ps.setInt(2, offset);
             // execute query and get the result set
@@ -119,7 +122,8 @@ public class GalleryDao {
     public GalleryModel getById(int galleryId) throws Exception {
         try {
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM Gallery WHERE id=?");
+            ps = connection.prepareStatement("SELECT g.*, COUNT(DISTINCT p.id) as photosCount, (SELECT count(*) FROM Gallery) as total FROM Gallery g" +
+                    "  LEFT JOIN Photos p ON p.galleryId = g.id WHERE g.id = ? GROUP BY g.id  ORDER BY g.updatedAt DESC");
             ps.setInt(1, galleryId);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
@@ -164,8 +168,9 @@ public class GalleryDao {
 
         try {
             // prepare  statement
-            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Gallery where userId = ?)" +
-                    " AS total FROM Gallery g WHERE g.userId = ? LIMIT ? OFFSET ?");
+            ps = connection.prepareStatement("SELECT g.*, COUNT(DISTINCT p.id) as photosCount, (SELECT count(*) from Gallery where userId= ?) as total FROM Gallery g" +
+                    "   LEFT JOIN Photos p ON p.galleryId = g.id " +
+                    "   WHERE g.userId = ? GROUP BY g.id  ORDER BY g.updatedAt DESC LIMIT ? OFFSET ?");
             ps.setInt(1, userId);
             ps.setInt(2, userId);
             ps.setInt(3, limit);
@@ -278,6 +283,7 @@ public class GalleryDao {
         gallery.setCreatedAt(rs.getTimestamp("createdAt").getTime());
         gallery.setUpdatedAt(rs.getTimestamp("updatedAt").getTime());
         gallery.setIsPrivate(rs.getBoolean("isPrivate"));
+        gallery.setPhotosCount(rs.getInt("photosCount"));
         //gallery.setCoverImage(rs.getInt("coverImage"));
         gallery.setViews(rs.getInt("views"));
 

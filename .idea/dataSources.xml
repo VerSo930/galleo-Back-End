@@ -3,7 +3,6 @@
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
     <data-source source="LOCAL" name="galleo@vuta-alexandru.com" uuid="3167cd4c-0a85-4846-9a97-6eea7b57fd2a">
       <driver-ref>mysql</driver-ref>
-      <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://vuta-alexandru.com:3306/galleo</jdbc-url>
       <driver-properties>

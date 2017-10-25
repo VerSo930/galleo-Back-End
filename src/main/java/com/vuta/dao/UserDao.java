@@ -250,8 +250,11 @@ public class UserDao {
             ps.setString(4, user.getUserName());
             ps.setString(5, user.getPassword());
             ps.setBoolean(6, user.getIsEnabled());
-            if(user.getAvatar() != null)
+            if(user.getAvatar() != null) {
                 ps.setInt(7, user.getAvatar().getId());
+            } else {
+                ps.setInt(7, 0);
+            }
             ps.setInt(8, user.getRole());
         } catch (SQLException e) {
             e.printStackTrace();

@@ -18,14 +18,14 @@ public class UserController {
     private UserDao dao;
     private JwtController jwtController;
 
-    public UserController()  {
+    public UserController() {
         this.dao = new UserDao();
         this.jwtController = new JwtController();
     }
 
-   public void setJwtClaims(Claims claims) {
+    public void setJwtClaims(Claims claims) {
         this.jwtController.setClaims(claims);
-   }
+    }
 
     public Response login(UserModel user) {
         try {
@@ -36,13 +36,13 @@ public class UserController {
 
             // check if there's a user  having provided username and password
             // if not return a 401 response
-            if(user == null) {
+            if (user == null) {
                 return Response.ok(new ResponseMessage("Wrong username or password! Please try again with valid credentials"))
                         .status(401).build();
             }
 
             // If user is disable, set enabled status on login
-            if(!user.getIsEnabled()){
+            if (!user.getIsEnabled()) {
                 dao.enableUser(user.getId());
             }
 
@@ -56,7 +56,7 @@ public class UserController {
 
     public Response getAllUsers() {
         try {
-            return  Response.ok(dao.getAll()).status(200).build();
+            return Response.ok(dao.getAll()).status(200).build();
         } catch (Exception e) {
             return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
         }
@@ -84,12 +84,14 @@ public class UserController {
 
             // Check if user that we are registering now is asking for ADMIN permission
             // If it ask for admin permission, return a 400 response
-            if(Objects.equals(JWT.getRoleName(user.getRole()), "ADMIN")) {
-                    return Response.ok(new ResponseMessage("You can't register with the asked role")).status(400).build();
+            if (Objects.equals(JWT.getRoleName(user.getRole()), "ADMIN")) {
+                return Response.ok(new ResponseMessage("You can't register with the asked role")).status(400).build();
             }
 
             // If the insertion in the DATABASE is successfully, return the new user
-            return Response.ok(this.dao.insert(user)).status(200).build();
+            return Response.ok(this.dao.insert(user))
+                    .header("Authorization", this.jwtController.generateToken(user))
+                    .status(200).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,7 +103,7 @@ public class UserController {
         try {
             if (userId == 0)
                 return Response.ok(new ResponseMessage("You must provide all user details")).status(400).build();
-            if(this.dao.delete(userId)) {
+            if (this.dao.delete(userId)) {
                 return Response.ok(new ResponseMessage("User deleted successfully")).status(200).build();
             } else {
                 return Response.ok(new ResponseMessage("User can't be deleted")).status(400).build();

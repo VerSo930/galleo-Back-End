@@ -15,12 +15,9 @@ import java.util.Map;
 
 public class GalleryController {
 
-    private Response.ResponseBuilder rb;
     private GalleryDao dao;
 
-    public GalleryController() {
-
-    }
+    public GalleryController() {}
 
     public Response getAll(int page, int limit) {
         try {
@@ -119,11 +116,13 @@ public class GalleryController {
             this.dao = new GalleryDao();
             if (galleryId == 0)
                 throw new Exception("You must provide a gallery id");
+
             if (dao.delete(galleryId) == 0)
                 return Response.ok(new ResponseMessage("Gallery don't exist"))
                         .status(204)
                         .build();
-            return Response.ok(new ResponseMessage("Gallery"))
+
+            return Response.ok(new ResponseMessage("Gallery was deleted"))
                     .status(200)
                     .build();
 
@@ -139,18 +138,18 @@ public class GalleryController {
     public Response update(GalleryModel gallery) {
         try {
             this.dao = new GalleryDao();
-            if (!GalleryTools.checkInsert(gallery))
+            if(!GalleryTools.checkInsert(gallery))
                 throw new Exception("You must provide a gallery id");
 
-            if(dao.update(gallery) > 0) {
-                return Response.ok()
+            if(dao.update(gallery) == 0)
+                return Response.ok(new ResponseMessage("Gallery was not updated"))
+                        .status(204)
+                        .build();
+
+                return Response.ok(new ResponseMessage("Gallery was updated"))
                         .status(200)
                         .build();
-            } else {
-                return Response.ok(new ResponseMessage("The gallery was not updated"))
-                        .status(400)
-                        .build();
-            }
+
 
         } catch (Exception e) {
             e.printStackTrace();

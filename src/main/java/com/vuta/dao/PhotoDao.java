@@ -40,8 +40,6 @@ public class PhotoDao {
     private PhotoModel photoModel;
 
     public PhotoDao() throws Exception {
-        // get a connection from tomcat pool
-        connection = Database.getConnection();
     }
 
     /**
@@ -54,7 +52,7 @@ public class PhotoDao {
         long count = 0;
         try {
             // prepare  statement
-            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Photos)" +
+            ps = Database.getConnection().prepareStatement("SELECT *, (SELECT count(*) FROM Photos)" +
                     " AS total FROM Photos LIMIT ? OFFSET ?");
             ps.setInt(1, limit);
             ps.setInt(2, offset);
@@ -91,7 +89,7 @@ public class PhotoDao {
     public PhotoModel getById(int photoId) throws Exception {
         try {
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM Photos WHERE id=?");
+            ps = Database.getConnection().prepareStatement("SELECT * FROM Photos WHERE id=?");
             ps.setInt(1,photoId);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
@@ -128,7 +126,7 @@ public class PhotoDao {
         try {
 
             // prepare  statement
-            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Photos where galleryId = ?)" +
+            ps = Database.getConnection().prepareStatement("SELECT *, (SELECT count(*) FROM Photos where galleryId = ?)" +
                     " AS total FROM Photos p WHERE p.galleryId = ? LIMIT ? OFFSET ?");
             ps.setInt(1,galleryId);
             ps.setInt(2,galleryId);
@@ -167,7 +165,7 @@ public class PhotoDao {
     public ArrayList<PhotoModel> getByUserId(int userId) throws Exception {
         try {
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM Photos WHERE userId=?");
+            ps = Database.getConnection().prepareStatement("SELECT * FROM Photos WHERE userId=?");
             ps.setInt(1, userId);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
@@ -198,7 +196,7 @@ public class PhotoDao {
 
         try {
             // prepare  statement
-            ps = connection.prepareStatement("INSERT INTO Photos (userId, galleryId, name, description, updatedAt, " +
+            ps = Database.getConnection().prepareStatement("INSERT INTO Photos (userId, galleryId, name, description, updatedAt, " +
                     "isPrivate, url, views) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
             // map user to Prepared Statement
@@ -212,6 +210,7 @@ public class PhotoDao {
             while (rs.next()) {
                 photo.setId(rs.getInt(1));
             }
+
 
             // close prepared statement
             ps.close();
@@ -235,8 +234,7 @@ public class PhotoDao {
         int count;
         try {
             // prepare  statement
-            connection = Database.getConnection();
-            ps = connection.prepareStatement("DELETE FROM Photos WHERE id=?", Statement.RETURN_GENERATED_KEYS);
+            ps = Database.getConnection().prepareStatement("DELETE FROM Photos WHERE id=?", Statement.RETURN_GENERATED_KEYS);
 
             // map id to Prepared Statement
             ps.setInt(1, photoId);
@@ -256,8 +254,7 @@ public class PhotoDao {
     }
 
     public void incrementHits(int photoId) throws Exception {
-        connection = Database.getConnection();
-        ps = connection.prepareStatement("UPDATE Photos SET views=views+1 WHERE id =?", Statement.RETURN_GENERATED_KEYS);
+        ps = Database.getConnection().prepareStatement("UPDATE Photos SET views=views+1 WHERE id =?", Statement.RETURN_GENERATED_KEYS);
         ps.setInt(1, photoId);
         ps.executeUpdate();
         ps.close();
@@ -268,9 +265,8 @@ public class PhotoDao {
     public boolean update(PhotoModel photo) throws Exception {
         int count;
         try {
-            connection = Database.getConnection();
             // prepare  statement
-            ps = connection.prepareStatement("UPDATE Photos SET galleryId=?, name=?, description=?, updatedAt=?, isPrivate=?, url=?," +
+            ps = Database.getConnection().prepareStatement("UPDATE Photos SET galleryId=?, name=?, description=?, updatedAt=?, isPrivate=?, url=?," +
                     "views=?  WHERE id=?", Statement.RETURN_GENERATED_KEYS);
             mapPhotoToPs(photo);
             // photoModel object to Prepared Statement
@@ -312,6 +308,7 @@ public class PhotoDao {
         photo.setUpdatedAt(rs.getTimestamp("updatedAt").getTime());
         photo.setPrivate(rs.getBoolean("isPrivate"));
         photo.setUrl(rs.getString("url"));
+        photo.setViews(rs.getInt("views"));
         } catch (NullPointerException e) {
             throw new Exception("One or more PhotoModel properties are NULL in database");
         }

@@ -40,11 +40,9 @@ public class GalleryDao {
 
         try {
             // prepare  statement
-//            ps = connection.prepareStatement("SELECT *, (SELECT count(*) FROM Gallery)" +
-//                    " AS total FROM Gallery LIMIT ? OFFSET ?");
-
             ps = connection.prepareStatement("SELECT g.*, COUNT(DISTINCT p.id) as photosCount, (SELECT count(*) FROM Gallery) as total FROM Gallery g" +
-                    "  LEFT JOIN Photos p ON p.galleryId = g.id GROUP BY g.id  ORDER BY g.updatedAt DESC LIMIT ? OFFSET ?");
+                    "  LEFT JOIN Photos p ON p.galleryId = g.id " +
+                    "GROUP BY g.id  ORDER BY g.updatedAt DESC LIMIT ? OFFSET ?");
             ps.setInt(1, limit);
             ps.setInt(2, offset);
             // execute query and get the result set
@@ -54,8 +52,8 @@ public class GalleryDao {
             while (rs.next()) {
                 galleryModel = mapGallery(rs);
                 galleryModel.setPhotos(null);
-                if (rs.getInt(8) != 0)
-                    galleryModel.setCoverImage(new PhotoDao().getById(rs.getInt(8)));
+                if ((Integer) rs.getObject("coverImage") != 0)
+                    galleryModel.setCoverImage(new PhotoDao().getById(rs.getInt((Integer) rs.getObject("coverImage"))));
                 galleryList.add(galleryModel);
                 count = (long) rs.getObject("total");
 
@@ -132,6 +130,8 @@ public class GalleryDao {
             while (rs.next()) {
                 this.gallery = mapGallery(rs);
                 this.gallery.setPhotos(null);
+                if ((Integer) rs.getObject("coverImage") != 0)
+                    this.gallery.setCoverImage(new PhotoDao().getById((Integer) rs.getObject("coverImage")));
             }
             // close prepared statement
             ps.close();
@@ -182,6 +182,8 @@ public class GalleryDao {
             while (rs.next()) {
                 galleryModel = mapGallery(rs);
                 galleryModel.setPhotos(null);
+                if ((Integer) rs.getObject("coverImage") != 0)
+                    galleryModel.setCoverImage(new PhotoDao().getById((Integer) rs.getObject("coverImage")));
                 galleryList.add(galleryModel);
                 count = (long) rs.getObject("total");
             }

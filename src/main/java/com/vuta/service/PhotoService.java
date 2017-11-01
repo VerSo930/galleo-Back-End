@@ -62,7 +62,8 @@ public class PhotoService {
     @POST
     @Consumes("multipart/form-data")
     public Response insertPhoto(MultipartFormDataInput input) {
-        return controller.insert(input, servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH));
+        // return controller.insert(input, servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH));
+        return controller.insert(input, "/opt/tomcat/webapps/galleo-images/");
     }
 
     @RolesAllowed({"ADMIN", "USER"})
@@ -78,27 +79,19 @@ public class PhotoService {
     public Response updatePhoto(PhotoModel photo) {
         return controller.update(photo);
     }
-//
-//    @POST
-//    @Path("/upload")
-//    @Consumes("multipart/form-data")
-//    @Produces(Constants.CONTENT_TYPE)
-//    @RolesAllowed({"USER", "ADMIN"})
-//    public Response uploadFile() {
-//        System.out.println(servletContext.getRealPath("/WEB-INF"));
-//        return controller.upload(input));
-//    }
+
 
     @PermitAll
-    @Path("/resource/{userId}/{photoId}/{quality}/{filename}")
+    @Path("/resource/{userId}/{galleryId}/{photoId}/{quality}/{filename}")
     @GET
     @Consumes("multipart/form-data")
     @Produces({"image/jpeg", "image/gif"})
     public Response getPhoto(@PathParam("userId") int userId,
                              @PathParam("photoId") int photoId,
+                             @PathParam("galleryId") int galleryId,
                              @PathParam("quality") String quality,
                              @PathParam("filename") String filename) {
 
-       return this.controller.getImage(userId, photoId, quality, filename, servletContext);
+       return this.controller.getImage(userId, photoId, galleryId, quality, filename);
     }
 }

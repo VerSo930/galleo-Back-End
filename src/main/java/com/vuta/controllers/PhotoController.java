@@ -69,14 +69,13 @@ public class PhotoController {
 
             if (!PhotoTools.checkInsert(photo))
                 return Response.ok(new ResponseMessage("You must provide all photo details")).status(400).build();
-
             photo.setUrl("");
             this.dao.insert(photo);
-            PhotoTools.uploadPhoto(input, servletPath, photo);
+            PhotoTools.uploadPhoto(input, photo);
             if(!this.dao.update(photo))
                 throw new Exception("Failed to set image URL");
 
-           return Response.ok(photo).status(200).build();
+           return Response.ok(this.dao.getById(photo.getId())).status(200).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
@@ -171,7 +170,7 @@ public class PhotoController {
         }
     }
 
-    public void incrementViews(int imageId) {
+    private void incrementViews(int imageId) {
 
         try {
             this.dao = new PhotoDao();
@@ -182,34 +181,17 @@ public class PhotoController {
 
     }
 
-    public Response getImage (int userId, int photoId, String quality, String fileName, ServletContext servletContext) {
-
-        incrementViews(photoId);
+    public Response getImage (int userId, int photoId, int galleryId, String quality, String fileName) {
+        if(quality.equals("hd"))
+            incrementViews(photoId);
 
         return Response.ok(PhotoTools.getImage(quality,
-                servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH),
                 userId,
+                galleryId,
                 fileName))
                 .status(200)
                 .build();
     }
-
-
-    /*public Response upload(MultipartFormDataInput input, String servletPath) {
-
-        try {
-            PhotoModel photo = PhotoTools.mapPhoto(input);
-            System.out.println(photo.toString());
-            this.rb = Response.ok(PhotoTools.uploadPhoto(input, servletPath));
-            this.rb.status(200);
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.rb = Response.ok(e.getMessage());
-            this.rb.status(400);
-        }
-
-        return this.rb.build();
-    }*/
 
 
 }

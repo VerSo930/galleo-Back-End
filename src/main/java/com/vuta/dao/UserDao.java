@@ -64,7 +64,10 @@ public class UserDao {
         try {
             connection = Database.getConnection();
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM User WHERE id=?");
+            ps = connection.prepareStatement("SELECT u1.*, COUNT(DISTINCT p.id) as photosCount, " +
+                    "COUNT(DISTINCT g.id) as galleriesCount FROM User u1 " +
+                    " LEFT JOIN Photos p ON u1.id = p.userId" +
+                    " LEFT JOIN Gallery g ON u1.id = g.userId WHERE u1.id=?");
             ps.setInt(1, userId);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();

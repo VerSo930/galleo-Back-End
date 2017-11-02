@@ -23,7 +23,6 @@ public class UserService {
 
     private UserController controller = new UserController();
 
-
     @PermitAll
     @POST
     @Path("/login")
@@ -56,6 +55,17 @@ public class UserService {
     @POST
     @Path("/test")
     public Response test(@Context Claims claims,
+                         @HeaderParam("Authorization") String authorization,
+                         UserModel user) {
+        controller.setJwtClaims(claims);
+        UserModel usr = new UserModel();
+        return Response.ok(usr).build();
+    }
+
+    @PermitAll
+    @POST
+    @Path("/backup/{userId}")
+    public Response downloadAllUserPhotos(@Context Claims claims,
                          @HeaderParam("Authorization") String authorization,
                          UserModel user) {
         controller.setJwtClaims(claims);

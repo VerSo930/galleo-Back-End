@@ -13,6 +13,8 @@ import javax.imageio.ImageIO;
 import javax.ws.rs.core.MultivaluedMap;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +84,7 @@ public class PhotoTools {
         }
 
         // check if file name already exists
-        file = new File(servletPath + userId+ "/" + galleryId + "/" + filename);
+        file = new File(servletPath + userId + "/" + galleryId + "/" + filename);
         if (!file.exists()) {
             file.createNewFile();
         }
@@ -122,43 +124,60 @@ public class PhotoTools {
         // loop trough forms parts
         for (InputPart inputPart : inputParts) {
 
-            // generate unique id
-            //String uniqueId = generateUniqueId();
-            String userId = input.getFormDataPart("userId", String.class, null);
-            String galleryId = input.getFormDataPart("galleryId", String.class, null);
+            Logger log = new Logger();
 
-            // get headers map
-            MultivaluedMap<String, String> header = inputPart.getHeaders();
-            String uniqueId = generateUniqueId();
-            // convert the uploaded file to input stream
-            final InputStream inputStream = inputPart.getBody(InputStream.class, null);
+            String userId = null;
+            final InputStream inputStream;
+            String uniqueId = null;
+            String galleryId = null;
+            MultivaluedMap<String, String> header;
 
-            // write file to server: original format
-            writeFile(IOUtils.toByteArray(inputStream), Constants.PHOTO_UPLOAD_PATH, userId, galleryId,
-                    uniqueId + "." + getFileExtension(header));
+            try {
+                userId = input.getFormDataPart("userId", String.class, null);
 
-            // prepare BAOS
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
+                galleryId = input.getFormDataPart("galleryId", String.class, null);
 
-            // get image buffer from form input part
-            BufferedImage srcImage = ImageIO.read(inputPart.getBody(InputStream.class, null));
+                // get headers map
+                header = inputPart.getHeaders();
+                uniqueId = generateUniqueId();
+                // convert the uploaded file to input stream
+                inputStream = inputPart.getBody(InputStream.class, null);
+            } catch (IOException e) {
+                e.printStackTrace(log.printStream());
+                throw new Exception(e.getMessage());
+            }
 
-            // resize and write image to server: 450 px
-            ImageIO.write(generateThumbnail(srcImage, 640, 480), getFileExtension(header), os);
-            writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), Constants.PHOTO_UPLOAD_PATH, userId,
-                    galleryId,
-                    "450-" + uniqueId + "." + getFileExtension(header));
-            os.flush();
-            os.close();
+            try {
+                // write file to server: original format
+                writeFile(IOUtils.toByteArray(inputStream), Constants.PHOTO_UPLOAD_PATH, userId, galleryId,
+                        uniqueId + "." + getFileExtension(header));
 
-            // resize and write image to server: 1200 px
-            os = new ByteArrayOutputStream();
-            ImageIO.write(Scalr.resize(srcImage, 1200), getFileExtension(header), os);
-            writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), Constants.PHOTO_UPLOAD_PATH, userId,
-                    galleryId,
-                    "1200-" + uniqueId + "." + getFileExtension(header));
-            os.flush();
-            os.close();
+                // prepare BAOS
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+                // get image buffer from form input part
+                BufferedImage srcImage = ImageIO.read(inputPart.getBody(InputStream.class, null));
+
+                // resize and write image to server: 450 px
+                ImageIO.write(generateThumbnail(srcImage, 640, 480), getFileExtension(header), os);
+                writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), Constants.PHOTO_UPLOAD_PATH, userId,
+                        galleryId,
+                        "450-" + uniqueId + "." + getFileExtension(header));
+                os.flush();
+                os.close();
+
+                // resize and write image to server: 1200 px
+                os = new ByteArrayOutputStream();
+                ImageIO.write(Scalr.resize(srcImage, 1200), getFileExtension(header), os);
+                writeFile(IOUtils.toByteArray(new ByteArrayInputStream(os.toByteArray())), Constants.PHOTO_UPLOAD_PATH, userId,
+                        galleryId,
+                        "1200-" + uniqueId + "." + getFileExtension(header));
+                os.flush();
+                os.close();
+            } catch (Exception e) {
+                e.printStackTrace(log.printStream());
+                throw  new Exception(e.getMessage());
+            }
 
             photo.setUrl(uniqueId + "." + getFileExtension(header));
         }
@@ -167,6 +186,7 @@ public class PhotoTools {
     public static File getImage(String quality, int userId, int galleryId, String fileName) {
 
         String imgFormat = "";
+        Logger log = new Logger();
 
         switch (quality) {
             case "small":
@@ -184,8 +204,64 @@ public class PhotoTools {
         if (file.exists() && !file.isDirectory()) {
             return file;
         } else {
-            return new File(Constants.PHOTO_UPLOAD_PATH + "/" + imgFormat + "no-image.jpg");
+            log.logError("Requested image file was not found");
+            return new File(Constants.PHOTO_UPLOAD_PATH + "file-not-found.jpg");
         }
+    }
+
+    public static void movePhotoToGallery(String photoName, int oldGalleryId, int newGalleryId, int userId) throws Exception {
+
+        moveFile(Constants.PHOTO_UPLOAD_PATH + "/" + userId + "/" + oldGalleryId,
+                Constants.PHOTO_UPLOAD_PATH + "/" + userId + "/" + newGalleryId, "450-" + photoName);
+        moveFile(Constants.PHOTO_UPLOAD_PATH + "/" + userId + "/" + oldGalleryId,
+                Constants.PHOTO_UPLOAD_PATH + "/" + userId + "/" + newGalleryId, "1200-" + photoName);
+        moveFile(Constants.PHOTO_UPLOAD_PATH + "/" + userId + "/" + oldGalleryId,
+                Constants.PHOTO_UPLOAD_PATH + "/" + userId + "/" + newGalleryId, photoName);
+
+    }
+
+    /**
+     * Move a file to a new path, and delete the old file
+     *
+     * @param oldPath  the current directory
+     * @param newPath  the new directory
+     * @param fileName file name
+     * @return {@code boolean} true if success, false if not
+     */
+    public static void moveFile(String oldPath, String newPath, String fileName) throws IOException {
+
+        // initialize streams
+        InputStream inStream = null;
+        OutputStream outStream = null;
+
+        // create new Path directory if not exists
+        Files.createDirectories(Paths.get(newPath));
+
+        // create Files
+        File oldFile = new File(oldPath + "/" + fileName);
+        File newFile = new File(newPath + "/" + fileName);
+
+        // create streams
+        inStream = new FileInputStream(oldFile);
+        outStream = new FileOutputStream(newFile);
+
+        byte[] buffer = new byte[1024];
+
+        int length;
+        //copy the file content in bytes
+        while ((length = inStream.read(buffer)) > 0) {
+            outStream.write(buffer, 0, length);
+        }
+
+        // close streams
+        inStream.close();
+        outStream.close();
+
+        //delete the original file
+        oldFile.delete();
+
+        System.out.println("File is copied successful!");
+
     }
 
     private static BufferedImage generateThumbnail(BufferedImage inputImage, int resultWidth, int resultHeight) {

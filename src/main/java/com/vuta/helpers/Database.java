@@ -23,6 +23,8 @@ public class Database {
                conn = datasource.getConnection();
 
            } catch (Exception e) {
+            Logger logger = new Logger();
+            e.printStackTrace(logger.printStream());
              throw new Exception(e.getMessage());
            }
 
@@ -38,7 +40,8 @@ public class Database {
                 connection.close();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger logger = new Logger();
+            e.printStackTrace(logger.printStream());
         }
     }
 

@@ -15,6 +15,7 @@ public class Constants {
     public static final String GALLERY_PATH = "/gallery";
     public static final String PHOTO_PATH = "/photo";
     public static final String PHOTO_UPLOAD_PATH = "/opt/tomcat/webapps/galleo-images/";
+    public static final String LOGS_PATH = "/opt/tomcat/webapps/galleo-logs/";
 
     // Authentication
     public static final String JWT_SECRET = "pCu/ghCamq9+wS/CG16JJ1NBqur2Ckzl522AA8xbhSQ=";

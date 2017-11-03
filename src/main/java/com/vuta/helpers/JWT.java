@@ -7,6 +7,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
+import jdk.nashorn.internal.runtime.ECMAException;
 
 import javax.xml.bind.DatatypeConverter;
 import java.util.*;
@@ -46,12 +47,17 @@ public class JWT {
     }
 
 
-    public static Claims verify(String token) throws Exception  {
+    public static Claims verify(String token) throws Exception {
 
-            // This will throw an exception if it is not a signed JWS (as expected)
-        return Jwts.parser()
-                .setSigningKey(DatatypeConverter.parseBase64Binary(Constants.JWT_SECRET))
-                .parseClaimsJws(token).getBody();
+        // This will throw an exception if it is not a signed JWS (as expected)
+        try {
+            return Jwts.parser()
+                    .setSigningKey(DatatypeConverter.parseBase64Binary(Constants.JWT_SECRET))
+                    .parseClaimsJws(token).getBody();
+        } catch (Exception e) {
+            throw new Exception("Bad authorization signature");
+        }
+
     }
 
     public static String generate(UserModel user) throws Exception {
@@ -64,7 +70,7 @@ public class JWT {
                 .setIssuedAt(date)
                 .setExpiration(new Date(new Date(System.currentTimeMillis()).getTime() + (Constants.JWT_EXPIRATION_TIME * 60000)))
                 .claim("userId", user.getId())
-                .claim("email:",user.getEmail())
+                .claim("email",user.getEmail())
                 .signWith(SignatureAlgorithm.HS256,
                         TextCodec.BASE64.decode(Constants.JWT_SECRET)
                 )

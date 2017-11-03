@@ -34,6 +34,8 @@ public class RequestFilter implements ContainerRequestFilter {
     private  final ServerResponse SERVER_ERROR = new ServerResponse(new ResponseMessage("INTERNAL SERVER ERROR"),
             500, new Headers<Object>());
     private JwtController jwtController = new JwtController();
+    private Logger log = new Logger();
+
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -41,22 +43,23 @@ public class RequestFilter implements ContainerRequestFilter {
         ResourceMethodInvoker methodInvoker = (ResourceMethodInvoker) requestContext.getProperty("org.jboss.resteasy.core.ResourceMethodInvoker");
         Method method = methodInvoker.getMethod();
 
+        // Get request headers
+        final MultivaluedMap<String, String> headers = requestContext.getHeaders();
+        // Fetch authorization header
+        final List<String> authorization = headers.get(AUTHORIZATION_PROPERTY);
+
         // If annotation @PermitALL is not present pass trough filter
         if (!method.isAnnotationPresent(PermitAll.class)) {
             // Access denied for all
             if (method.isAnnotationPresent(DenyAll.class)) {
+                log.logEvent("Trying to access denied resource");
                 requestContext.abortWith(ACCESS_FORBIDDEN);
                 return;
             }
 
-            // Get request headers
-            final MultivaluedMap<String, String> headers = requestContext.getHeaders();
-
-            // Fetch authorization header
-            final List<String> authorization = headers.get(AUTHORIZATION_PROPERTY);
-
             // If no authorization information present; block access
             if (authorization == null || authorization.isEmpty()) {
+                log.logEvent("Request without authorization provided");
                 requestContext.abortWith(ACCESS_DENIED);
                 return;
             }
@@ -66,6 +69,7 @@ public class RequestFilter implements ContainerRequestFilter {
 
             // Verify provided token signature
             if (!jwtController.verifyToken(token)) {
+                log.logEvent("Authorization with bad signature detected!");
                 requestContext.abortWith(ACCESS_DENIED);
                 return;
             }
@@ -77,9 +81,15 @@ public class RequestFilter implements ContainerRequestFilter {
 
                 // Is user valid?
                 if (!rolesSet.contains(jwtController.getClaims().getAudience())) {
+                    log.logEvent("Request with denied role detected!");
                     requestContext.abortWith(ACCESS_DENIED);
                 }
             }
+        } else {
+            // if the access of the resource is public, we will check if the authorization header
+            // and update the last activity of user
+            if (authorization != null && !authorization.isEmpty())
+                jwtController.verifyToken(authorization.get(0));
         }
     }
 

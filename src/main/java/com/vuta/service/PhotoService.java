@@ -63,7 +63,7 @@ public class PhotoService {
     @Consumes("multipart/form-data")
     public Response insertPhoto(MultipartFormDataInput input) {
         // return controller.insert(input, servletContext.getRealPath("/WEB-INF/" + Constants.PHOTO_UPLOAD_PATH));
-        return controller.insert(input, "/opt/tomcat/webapps/galleo-images/");
+        return controller.insert(input);
     }
 
     @RolesAllowed({"ADMIN", "USER"})
@@ -74,10 +74,11 @@ public class PhotoService {
     }
 
     @RolesAllowed({"ADMIN", "USER"})
-    @Path("/")
+    @Path("/{oldGalleryId}")
     @PUT
-    public Response updatePhoto(PhotoModel photo) {
-        return controller.update(photo);
+    public Response updatePhoto(PhotoModel photo,
+                                @PathParam("oldGalleryId") int oldGalleryId) {
+        return controller.update(photo, oldGalleryId);
     }
 
 

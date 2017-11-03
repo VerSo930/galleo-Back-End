@@ -2,6 +2,7 @@ package com.vuta.controllers;
 
 import com.vuta.Constants;
 import com.vuta.dao.PhotoDao;
+import com.vuta.helpers.Logger;
 import com.vuta.helpers.PhotoTools;
 import com.vuta.model.ResponseMessage;
 import com.vuta.model.PhotoModel;
@@ -24,9 +25,8 @@ import static com.vuta.helpers.PhotoTools.mapFormToPhoto;
  */
 public class PhotoController {
 
-
-    private Response.ResponseBuilder rb;
     private PhotoDao dao;
+    private Logger log = new Logger();
 
     public PhotoController() {
     }
@@ -54,6 +54,7 @@ public class PhotoController {
                     .build();
 
         } catch (Exception e) {
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(500)
                     .build();
@@ -61,7 +62,7 @@ public class PhotoController {
 
     }
 
-    public Response insert(MultipartFormDataInput input, String servletPath) {
+    public Response insert(MultipartFormDataInput input) {
         try {
 
             this.dao = new PhotoDao();
@@ -77,7 +78,7 @@ public class PhotoController {
 
            return Response.ok(this.dao.getById(photo.getId())).status(200).build();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
         }
     }
@@ -104,6 +105,7 @@ public class PhotoController {
                 throw new Exception("You must provide a Photo id");
             return Response.ok(dao.getById(photoId)).status(200).build();
         } catch (Exception e) {
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
     }
@@ -132,6 +134,7 @@ public class PhotoController {
                     .build();
 
         } catch (Exception e) {
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
     }
@@ -149,36 +152,42 @@ public class PhotoController {
             }
 
         } catch (Exception e) {
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
     }
 
-    public Response update(PhotoModel photo) {
+    public Response update(PhotoModel photo, int oldGalleryId) {
         try {
 
             this.dao = new PhotoDao();
+            // check if photo has all required params
             if (!PhotoTools.checkInsert(photo))
                 throw new Exception("You must provide a photo id");
 
+            // if gallery id was changed we need to move the photo file in a directory corresponding to new gallery id
+            if(oldGalleryId != photo.getGalleryId()){
+                PhotoTools.movePhotoToGallery(photo.getUrl(), oldGalleryId, photo.getGalleryId(), photo.getUserId());
+            }
+            // check if update was success or fail
             if (dao.update(photo)) {
                 return Response.ok(new ResponseMessage("Photo with id " + photo.getId() + " was updated")).status(200).build();
             } else {
                 return Response.ok(new ResponseMessage("Can't update Photo with id " + photo.getId())).status(204).build();
             }
         } catch (Exception e) {
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
     }
 
     private void incrementViews(int imageId) {
-
         try {
             this.dao = new PhotoDao();
             this.dao.incrementHits(imageId);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.logError(e.getMessage());
         }
-
     }
 
     public Response getImage (int userId, int photoId, int galleryId, String quality, String fileName) {

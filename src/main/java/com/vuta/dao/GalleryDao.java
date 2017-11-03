@@ -238,19 +238,20 @@ public class GalleryDao {
      * @throws Exception
      */
     public int update(GalleryModel gallery) throws Exception {
-        int count = 0;
+        int count ;
         try {
             // prepare  statement
-            ps = connection.prepareStatement("UPDATE Gallery SET name=?, description=?, isPrivate=?, coverImage=?," +
+            ps = connection.prepareStatement("UPDATE Gallery SET name=?, description=?, updatedAt=?, isPrivate=?, coverImage=?," +
                     "views=?  WHERE id=?", Statement.RETURN_GENERATED_KEYS);
 
             // gallery object to Prepared Statement
             ps.setString(1, gallery.getName());
             ps.setString(2, gallery.getDescription());
-            ps.setBoolean(3, gallery.getIsPrivate());
-            ps.setInt(4, gallery.getCoverImage().getId());
-            ps.setInt(5, gallery.getViews());
-            ps.setInt(6, gallery.getId());
+            ps.setTimestamp(3, new java.sql.Timestamp(new Date(System.currentTimeMillis()).getTime()));
+            ps.setBoolean(4, gallery.getIsPrivate());
+            ps.setInt(5, gallery.getCoverImage().getId());
+            ps.setInt(6, gallery.getViews());
+            ps.setInt(7, gallery.getId());
 
             // execute query and get the result set
             count = ps.executeUpdate();

@@ -1,10 +1,11 @@
 package com.vuta.dao;
 
 import com.vuta.helpers.Database;
+import com.vuta.helpers.Logger;
 import com.vuta.model.UserModel;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Created by verso_dxr17un on 9/23/2017.
@@ -22,6 +23,7 @@ public class UserDao {
     private static Connection connection;
     private PreparedStatement ps;
     private ArrayList<UserModel> usersList = new ArrayList<>();
+    private Logger logger = new Logger();
 
     public UserDao() {
     }
@@ -79,7 +81,7 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -114,7 +116,7 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -140,7 +142,7 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -176,13 +178,12 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
             Database.close(connection);
         }
-
         return user;
     }
 
@@ -193,7 +194,7 @@ public class UserDao {
      */
     public boolean delete(int id) throws Exception {
 
-        int count;
+        int count = 0;
         try {
             connection = Database.getConnection();
             // prepare  statement
@@ -208,7 +209,7 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -216,6 +217,38 @@ public class UserDao {
         }
 
         return count != 0;
+    }
+
+    /**
+     * Verify if user exists in database and update his last activity
+     * @param userId User Id
+     * @throws Exception if user don't exists or if is disabled
+     */
+    public void userCheckout(int userId) throws Exception {
+        int count;
+        try {
+            connection = Database.getConnection();
+            // prepare  statement
+            ps = connection.prepareStatement("UPDATE User SET lastActivity = ? WHERE id = ? AND isEnabled=1", Statement.RETURN_GENERATED_KEYS);
+
+            // map id to Prepared Statement
+            ps.setTimestamp(1, new java.sql.Timestamp(new java.util.Date(System.currentTimeMillis()).getTime()));
+            ps.setInt(2, userId);
+
+            // execute query and get the result set
+            count = ps.executeUpdate();
+
+            // close prepared statement
+            ps.close();
+        } catch (Exception e) {
+            e.printStackTrace(logger.printStream());
+            throw new Exception(e.getMessage());
+        } finally {
+            // put back connection in tomcat pool
+            Database.close(connection);
+        }
+        if(count == 0)
+            throw new Exception("User don't exist or is disabled");
     }
 
     /**
@@ -260,7 +293,7 @@ public class UserDao {
             }
             ps.setInt(8, user.getRole());
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(logger.printStream());
             throw new Exception("One or more user properties are not provided");
         }
     }

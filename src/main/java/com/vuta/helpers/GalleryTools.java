@@ -18,4 +18,14 @@ public class GalleryTools {
 
         return true;
     }
+
+    public static boolean checkUpdate(GalleryModel gallery, int oldGalleryId) {
+        if(gallery == null || oldGalleryId == 0)
+            return false;
+
+        if(Strings.isNullOrEmpty(gallery.getName()) || Strings.isNullOrEmpty(gallery.getDescription()))
+            return false;
+
+        return true;
+    }
 }

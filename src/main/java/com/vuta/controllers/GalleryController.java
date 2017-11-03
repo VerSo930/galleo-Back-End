@@ -2,6 +2,8 @@ package com.vuta.controllers;
 
 import com.vuta.dao.GalleryDao;
 import com.vuta.helpers.GalleryTools;
+import com.vuta.helpers.Logger;
+import com.vuta.helpers.PhotoTools;
 import com.vuta.model.ResponseMessage;
 import com.vuta.model.GalleryModel;
 
@@ -16,6 +18,7 @@ import java.util.Map;
 public class GalleryController {
 
     private GalleryDao dao;
+    private Logger log = new Logger();
 
     public GalleryController() {}
 
@@ -23,8 +26,10 @@ public class GalleryController {
         try {
             int offset;
 
-            if (limit == 0 || page == 0)
+            if (limit == 0 || page == 0) {
                 throw new Exception("You must provide pagination data");
+
+            }
             if (page == 1) {
                 offset = 0;
             } else {
@@ -39,6 +44,7 @@ public class GalleryController {
                     .status(200)
                     .build();
         } catch (Exception e) {
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(500)
                     .build();
@@ -55,7 +61,7 @@ public class GalleryController {
                     .build();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();
@@ -87,7 +93,7 @@ public class GalleryController {
                     .status(200)
                     .build();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();
@@ -97,13 +103,14 @@ public class GalleryController {
     public Response getById(int galleryId) {
         try {
             this.dao = new GalleryDao();
-            if (galleryId == 0)
+            if (galleryId == 0){
                 throw new Exception("You must provide a gallery id");
+            }
             return Response.ok(dao.getById(galleryId))
                     .status(200)
                     .build();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();
@@ -127,7 +134,7 @@ public class GalleryController {
                     .build();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();
@@ -152,7 +159,7 @@ public class GalleryController {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();

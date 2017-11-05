@@ -2,13 +2,10 @@ package com.vuta.controllers;
 
 import com.vuta.dao.GalleryDao;
 import com.vuta.helpers.GalleryTools;
-import com.vuta.helpers.Logger;
-import com.vuta.helpers.PhotoTools;
 import com.vuta.model.ResponseMessage;
 import com.vuta.model.GalleryModel;
 
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,7 +15,6 @@ import java.util.Map;
 public class GalleryController {
 
     private GalleryDao dao;
-    private Logger log = new Logger();
 
     public GalleryController() {}
 
@@ -44,7 +40,6 @@ public class GalleryController {
                     .status(200)
                     .build();
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(500)
                     .build();
@@ -61,7 +56,6 @@ public class GalleryController {
                     .build();
 
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();
@@ -93,7 +87,6 @@ public class GalleryController {
                     .status(200)
                     .build();
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();
@@ -110,7 +103,6 @@ public class GalleryController {
                     .status(200)
                     .build();
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();
@@ -134,7 +126,7 @@ public class GalleryController {
                     .build();
 
         } catch (Exception e) {
-            log.logError(e.getMessage());
+
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();
@@ -159,7 +151,6 @@ public class GalleryController {
 
 
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(400)
                     .build();

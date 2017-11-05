@@ -1,7 +1,6 @@
 package com.vuta.dao;
 
 import com.vuta.helpers.Database;
-import com.vuta.helpers.Logger;
 import com.vuta.model.UserModel;
 
 import java.sql.*;
@@ -23,7 +22,6 @@ public class UserDao {
     private static Connection connection;
     private PreparedStatement ps;
     private ArrayList<UserModel> usersList = new ArrayList<>();
-    private Logger logger = new Logger();
 
     public UserDao() {
     }
@@ -36,7 +34,10 @@ public class UserDao {
         try {
             connection = Database.getConnection();
             // prepare  statement
-            ps = connection.prepareStatement("SELECT * FROM User WHERE isEnabled=1");
+            ps = connection.prepareStatement("SELECT u1.*, COUNT(DISTINCT p.id) as photosCount, " +
+                    "COUNT(DISTINCT g.id) as galleriesCount FROM User u1 " +
+                    " LEFT JOIN Photos p ON u1.id = p.userId" +
+                    " LEFT JOIN Gallery g ON u1.id = g.userId GROUP BY 1");
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
             // loop trough result set,
@@ -69,7 +70,7 @@ public class UserDao {
             ps = connection.prepareStatement("SELECT u1.*, COUNT(DISTINCT p.id) as photosCount, " +
                     "COUNT(DISTINCT g.id) as galleriesCount FROM User u1 " +
                     " LEFT JOIN Photos p ON u1.id = p.userId" +
-                    " LEFT JOIN Gallery g ON u1.id = g.userId WHERE u1.id=?");
+                    " LEFT JOIN Gallery g ON u1.id = g.userId WHERE u1.id=? GROUP BY 1");
             ps.setInt(1, userId);
             // execute query and get the result set
             ResultSet rs = ps.executeQuery();
@@ -81,7 +82,6 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -116,7 +116,6 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -142,7 +141,6 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -164,7 +162,7 @@ public class UserDao {
             ps = connection.prepareStatement("SELECT u1.*, COUNT(DISTINCT p.id) as photosCount, " +
                     "COUNT(DISTINCT g.id) as galleriesCount FROM User u1 " +
                     " LEFT JOIN Photos p ON u1.id = p.userId" +
-                    " LEFT JOIN Gallery g ON u1.id = g.userId WHERE userName=? AND password=?");
+                    " LEFT JOIN Gallery g ON u1.id = g.userId WHERE userName=? AND password=? GROUP BY 1");
             ps.setString(1, username);
             ps.setString(2, password);
             // execute query and get the result set
@@ -178,7 +176,6 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -209,7 +206,6 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -241,7 +237,6 @@ public class UserDao {
             // close prepared statement
             ps.close();
         } catch (Exception e) {
-            e.printStackTrace(logger.printStream());
             throw new Exception(e.getMessage());
         } finally {
             // put back connection in tomcat pool
@@ -293,7 +288,6 @@ public class UserDao {
             }
             ps.setInt(8, user.getRole());
         } catch (SQLException e) {
-            e.printStackTrace(logger.printStream());
             throw new Exception("One or more user properties are not provided");
         }
     }

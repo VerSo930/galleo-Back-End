@@ -1,24 +1,13 @@
 package com.vuta.controllers;
 
-import com.vuta.Constants;
 import com.vuta.dao.PhotoDao;
-import com.vuta.helpers.Logger;
 import com.vuta.helpers.PhotoTools;
 import com.vuta.model.ResponseMessage;
 import com.vuta.model.PhotoModel;
-import org.imgscalr.Scalr;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
-import javax.imageio.ImageIO;
-import javax.servlet.ServletContext;
 import javax.ws.rs.core.Response;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.util.Map;
-
-import static com.vuta.helpers.PhotoTools.mapFormToPhoto;
 
 /**
  * Created by vuta on 25/09/2017.
@@ -26,7 +15,6 @@ import static com.vuta.helpers.PhotoTools.mapFormToPhoto;
 public class PhotoController {
 
     private PhotoDao dao;
-    private Logger log = new Logger();
 
     public PhotoController() {
     }
@@ -54,7 +42,6 @@ public class PhotoController {
                     .build();
 
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage()))
                     .status(500)
                     .build();
@@ -78,7 +65,6 @@ public class PhotoController {
 
            return Response.ok(this.dao.getById(photo.getId())).status(200).build();
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();
         }
     }
@@ -105,7 +91,7 @@ public class PhotoController {
                 throw new Exception("You must provide a Photo id");
             return Response.ok(dao.getById(photoId)).status(200).build();
         } catch (Exception e) {
-            log.logError(e.getMessage());
+
             return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
     }
@@ -134,7 +120,7 @@ public class PhotoController {
                     .build();
 
         } catch (Exception e) {
-            log.logError(e.getMessage());
+
             return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
     }
@@ -152,7 +138,6 @@ public class PhotoController {
             }
 
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
     }
@@ -176,7 +161,6 @@ public class PhotoController {
                 return Response.ok(new ResponseMessage("Can't update Photo with id " + photo.getId())).status(204).build();
             }
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return Response.ok(new ResponseMessage(e.getMessage())).status(400).build();
         }
     }
@@ -186,7 +170,7 @@ public class PhotoController {
             this.dao = new PhotoDao();
             this.dao.incrementHits(imageId);
         } catch (Exception e) {
-            log.logError(e.getMessage());
+            e.printStackTrace();
         }
     }
 

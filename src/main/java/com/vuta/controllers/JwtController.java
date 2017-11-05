@@ -2,7 +2,6 @@ package com.vuta.controllers;
 
 import com.vuta.dao.UserDao;
 import com.vuta.helpers.JWT;
-import com.vuta.helpers.Logger;
 import com.vuta.model.UserModel;
 import io.jsonwebtoken.Claims;
 
@@ -14,7 +13,6 @@ import java.util.Objects;
 public class JwtController {
 
     private Claims claims;
-    private Logger log = new Logger();
 
     public JwtController() {
     }
@@ -26,7 +24,6 @@ public class JwtController {
             userDao.userCheckout(Integer.parseInt(this.claims.getId()));
             return true;
         } catch (Exception e) {
-            log.logError(e.getMessage());
             return false;
         }
     }
@@ -45,9 +42,10 @@ public class JwtController {
 
     public String generateToken(UserModel user) {
         try {
+            UserDao userDao = new UserDao();
+            userDao.userCheckout(user.getId());
             return JWT.generate(user);
         } catch (Exception e) {
-            log.logError(e.getMessage());
             e.printStackTrace();
             return null;
         }

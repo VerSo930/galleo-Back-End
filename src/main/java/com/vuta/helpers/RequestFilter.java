@@ -11,6 +11,8 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
@@ -24,7 +26,7 @@ import java.util.Set;
  * Created by vuta on 26/09/2017.
  */
 @Provider
-public class RequestFilter implements ContainerRequestFilter {
+public class RequestFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
     private  final String AUTHORIZATION_PROPERTY = "Authorization";
     private  final ServerResponse ACCESS_DENIED = new ServerResponse(new ResponseMessage("Access denied to this path"),
@@ -34,7 +36,6 @@ public class RequestFilter implements ContainerRequestFilter {
     private  final ServerResponse SERVER_ERROR = new ServerResponse(new ResponseMessage("INTERNAL SERVER ERROR"),
             500, new Headers<Object>());
     private JwtController jwtController = new JwtController();
-    private Logger log = new Logger();
 
 
     @Override
@@ -52,14 +53,12 @@ public class RequestFilter implements ContainerRequestFilter {
         if (!method.isAnnotationPresent(PermitAll.class)) {
             // Access denied for all
             if (method.isAnnotationPresent(DenyAll.class)) {
-                log.logEvent("Trying to access denied resource");
                 requestContext.abortWith(ACCESS_FORBIDDEN);
                 return;
             }
 
             // If no authorization information present; block access
             if (authorization == null || authorization.isEmpty()) {
-                log.logEvent("Request without authorization provided");
                 requestContext.abortWith(ACCESS_DENIED);
                 return;
             }
@@ -69,7 +68,6 @@ public class RequestFilter implements ContainerRequestFilter {
 
             // Verify provided token signature
             if (!jwtController.verifyToken(token)) {
-                log.logEvent("Authorization with bad signature detected!");
                 requestContext.abortWith(ACCESS_DENIED);
                 return;
             }
@@ -81,7 +79,6 @@ public class RequestFilter implements ContainerRequestFilter {
 
                 // Is user valid?
                 if (!rolesSet.contains(jwtController.getClaims().getAudience())) {
-                    log.logEvent("Request with denied role detected!");
                     requestContext.abortWith(ACCESS_DENIED);
                 }
             }
@@ -93,4 +90,8 @@ public class RequestFilter implements ContainerRequestFilter {
         }
     }
 
+    @Override
+    public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
+
+    }
 }

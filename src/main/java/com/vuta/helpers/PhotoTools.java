@@ -124,8 +124,6 @@ public class PhotoTools {
         // loop trough forms parts
         for (InputPart inputPart : inputParts) {
 
-            Logger log = new Logger();
-
             String userId = null;
             final InputStream inputStream;
             String uniqueId = null;
@@ -143,7 +141,6 @@ public class PhotoTools {
                 // convert the uploaded file to input stream
                 inputStream = inputPart.getBody(InputStream.class, null);
             } catch (IOException e) {
-                e.printStackTrace(log.printStream());
                 throw new Exception(e.getMessage());
             }
 
@@ -175,7 +172,6 @@ public class PhotoTools {
                 os.flush();
                 os.close();
             } catch (Exception e) {
-                e.printStackTrace(log.printStream());
                 throw  new Exception(e.getMessage());
             }
 
@@ -186,7 +182,6 @@ public class PhotoTools {
     public static File getImage(String quality, int userId, int galleryId, String fileName) {
 
         String imgFormat = "";
-        Logger log = new Logger();
 
         switch (quality) {
             case "small":
@@ -204,7 +199,6 @@ public class PhotoTools {
         if (file.exists() && !file.isDirectory()) {
             return file;
         } else {
-            log.logError("Requested image file was not found");
             return new File(Constants.PHOTO_UPLOAD_PATH + "file-not-found.jpg");
         }
     }

@@ -47,7 +47,6 @@ public class UserController {
                 dao.enableUser(user.getId());
             }
 
-            System.out.println(this.jwtController.generateToken(user));
             return Response.ok(user).header("Authorization", this.jwtController.generateToken(user)).status(200).build();
         } catch (Exception e) {
             return Response.ok(new ResponseMessage(e.getMessage())).status(500).build();

@@ -1,11 +1,8 @@
 package com.vuta.service;
 
-import com.google.common.net.MediaType;
 import com.vuta.Constants;
 import com.vuta.controllers.PhotoController;
 import com.vuta.model.PhotoModel;
-import com.vuta.model.ResponseMessage;
-import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import javax.annotation.security.PermitAll;
@@ -14,10 +11,6 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 
 /**

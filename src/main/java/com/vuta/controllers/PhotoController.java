@@ -15,6 +15,7 @@ import java.util.Map;
 public class PhotoController {
 
     private PhotoDao dao;
+    private JwtController tokenController = new JwtController();
 
     public PhotoController() {
     }

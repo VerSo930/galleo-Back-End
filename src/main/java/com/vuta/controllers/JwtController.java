@@ -12,16 +12,16 @@ import java.util.Objects;
  */
 public class JwtController {
 
-    private Claims claims;
+    private static Claims claims;
 
     public JwtController() {
     }
 
     public Boolean verifyToken(String token) {
         try {
-            this.claims = JWT.verify(token);
+            claims = JWT.verify(token);
             UserDao userDao = new UserDao();
-            userDao.userCheckout(Integer.parseInt(this.claims.getId()));
+            userDao.userCheckout(Integer.parseInt(claims.getId()));
             return true;
         } catch (Exception e) {
             return false;
@@ -33,7 +33,7 @@ public class JwtController {
     }
 
     public void setClaims(Claims c) {
-        this.claims = c;
+        claims = c;
     }
 
     public boolean checkRole(String role) {

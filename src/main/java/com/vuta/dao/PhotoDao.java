@@ -52,8 +52,9 @@ public class PhotoDao {
         long count = 0;
         try {
             // prepare  statement
-            ps = Database.getConnection().prepareStatement("SELECT *, (SELECT count(*) FROM Photos)" +
-                    " AS total FROM Photos LIMIT ? OFFSET ?");
+            ps = Database.getConnection().prepareStatement("SELECT *, COUNT(DISTINCT p1.id)" +
+                    " AS total FROM Photos p1" +
+                    "   LEFT JOIN Photos p2 ON p2.isPrivate = 0 WHERE p1.isPrivate = 0 GROUP BY 1 LIMIT ? OFFSET ?");
             ps.setInt(1, limit);
             ps.setInt(2, offset);
             // execute query and get the result set

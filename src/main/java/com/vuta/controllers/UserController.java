@@ -39,10 +39,10 @@ public class UserController {
             // if not return a 401 response
             if (user == null) {
                 return Response.ok(new ResponseMessage("Wrong username or password! Please try again with valid credentials"))
-                        .status(4).build();
+                        .status(401).build();
             }
 
-            // If user is disable, set enabled status on login
+            // If user is disabled, set enabled status on login
             if (!user.getIsEnabled()) {
                 dao.enableUser(user.getId());
             }
